@@ -1,0 +1,26 @@
+fragment User on User {
+  id
+  name
+  email
+}
+
+mutation login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
+    token
+    user {
+      ...User
+    }
+  }
+}
+
+query CurrentUser {
+  user {
+    ...User
+  }
+}
+
+mutation RefreshToken {
+  refreshToken {
+    token
+  }
+}

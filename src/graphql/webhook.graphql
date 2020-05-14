@@ -1,0 +1,57 @@
+fragment Webhook on Webhook {
+  id
+  name
+  enable
+  createdAt
+  updatedAt
+  token
+}
+
+query Webhook($id: ID!) {
+  webhook(id: $id) {
+    ...Webhook
+  }
+}
+
+query Webhooks(
+  $taskId: ID!
+  $after: String
+  $query: String
+  $orderBy: [Ordering]
+) {
+  task(id: $taskId) {
+    id
+    webhooks(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      edges {
+        node {
+          ...Webhook
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
+
+mutation DeleteWebhook($id: ID!) {
+  deleteWebhook(id: $id) {
+    ...Webhook
+  }
+}
+
+mutation CreateWebhook($input: CreateWebhookInput!) {
+  createWebhook(input: $input) {
+    ...Webhook
+  }
+}
+
+mutation UpdatedWebhook($id: ID!, $input: UpdateWebhookInput!) {
+  updateWebhook(id: $id, input: $input) {
+    ...Webhook
+  }
+}

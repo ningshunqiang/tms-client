@@ -1,0 +1,56 @@
+fragment Timer on Timer {
+  id
+  name
+  createdAt
+  updatedAt
+  cron
+  enable
+  taskId
+}
+query Timer($id: ID!) {
+  timer(id: $id) {
+    ...Timer
+  }
+}
+query Timers(
+  $taskId: ID!
+  $after: String
+  $query: String
+  $orderBy: [Ordering]
+) {
+  task(id: $taskId) {
+    id
+    timers(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      edges {
+        node {
+          ...Timer
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}
+
+mutation DeleteTimer($id: ID!) {
+  deleteTimer(id: $id) {
+    ...Timer
+  }
+}
+
+mutation CreateTimer($input: CreateTimerInput!) {
+  createTimer(input: $input) {
+    ...Timer
+  }
+}
+
+mutation UpdatedTimer($id: ID!, $input: UpdateTimerInput!) {
+  updateTimer(id: $id, input: $input) {
+    ...Timer
+  }
+}
