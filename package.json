@@ -29,7 +29,20 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  },
+  "lint-staged": {
+    "**/*.less": "stylelint --syntax less",
+    "**/*.{js,jsx,ts,tsx}": "npm run lint-staged:js",
+    "**/*.{js,jsx,tsx,ts,less,md,json}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "browserslist": [
     "> 1%",
     "last 2 versions",
