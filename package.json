@@ -56,7 +56,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@monaco-editor/react": "^3.3.0",
     "antd": "^4.2.0",
-    "apollo-boost": "^0.4.7",
+    "apollo-boost": "^0.4.9",
     "bizcharts": "^4.0.2",
     "bizgoblin": "^0.2.0",
     "class-transformer": "^0.2.3",
