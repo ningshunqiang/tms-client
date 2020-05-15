@@ -32,6 +32,12 @@ export type Scalars = {
   DateTime: any;
 };
 
+export type CreateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+};
+
 export type CreateTaskHistoryInput = {
   name: Scalars["String"];
   code: Scalars["String"];
@@ -71,6 +77,7 @@ export enum Direction {
 
 export type Mutation = {
   __typename?: "Mutation";
+  createTaskHistory: TaskHistory;
   createTimer: Timer;
   updateTimer: Timer;
   deleteTimer: Timer;
@@ -80,12 +87,18 @@ export type Mutation = {
   createTask: Task;
   updateTask: Task;
   deleteTask: Task;
+  createStorage: Storage;
+  updateStorage: Storage;
+  deleteStorage: Storage;
   createUser: User;
   updateUser: User;
   deleteUser: User;
   login: TokenPayload;
   refreshToken: TokenPayload;
-  createTaskHistory: TaskHistory;
+};
+
+export type MutationCreateTaskHistoryArgs = {
+  input: CreateTaskHistoryInput;
 };
 
 export type MutationCreateTimerArgs = {
@@ -127,6 +140,19 @@ export type MutationDeleteTaskArgs = {
   id: Scalars["ID"];
 };
 
+export type MutationCreateStorageArgs = {
+  input: CreateStorageInput;
+};
+
+export type MutationUpdateStorageArgs = {
+  id: Scalars["ID"];
+  input: UpdateStorageInput;
+};
+
+export type MutationDeleteStorageArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
 };
@@ -145,10 +171,6 @@ export type MutationLoginArgs = {
   email: Scalars["String"];
 };
 
-export type MutationCreateTaskHistoryArgs = {
-  input: CreateTaskHistoryInput;
-};
-
 export type Ordering = {
   sort: Scalars["String"];
   direction?: Maybe<Direction>;
@@ -164,13 +186,19 @@ export type PageInfo = {
 
 export type Query = {
   __typename?: "Query";
+  taskHistory: TaskHistory;
   timer: Timer;
   webhook: Webhook;
   task: Task;
   tasks: TaskConnection;
+  storage: Storage;
+  storages: StorageConnection;
   user: User;
   users: UserConnection;
-  taskHistory: TaskHistory;
+};
+
+export type QueryTaskHistoryArgs = {
+  id: Scalars["ID"];
 };
 
 export type QueryTimerArgs = {
@@ -194,6 +222,19 @@ export type QueryTasksArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type QueryStorageArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
 export type QueryUserArgs = {
   id?: Maybe<Scalars["ID"]>;
 };
@@ -207,14 +248,55 @@ export type QueryUsersArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type QueryTaskHistoryArgs = {
-  id: Scalars["ID"];
-};
-
 export enum Role {
   ADMIN = "ADMIN",
   USER = "USER",
 }
+
+export type Storage = {
+  __typename?: "Storage";
+  id: Scalars["ID"];
+  key: Scalars["String"];
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  ownerId: Scalars["String"];
+  owner: User;
+  collaborators: UserConnection;
+  tasks: TaskConnection;
+};
+
+export type StorageCollaboratorsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StorageTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StorageConnection = {
+  __typename?: "StorageConnection";
+  edges: Array<StorageEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type StorageEdge = {
+  __typename?: "StorageEdge";
+  node: Storage;
+  cursor: Scalars["String"];
+};
 
 export type Task = {
   __typename?: "Task";
@@ -230,7 +312,8 @@ export type Task = {
   collaborators: UserConnection;
   histories: TaskHistoryConnection;
   timers: TimerConnection;
-  webhooks: WebookConnection;
+  webhooks: WebhookConnection;
+  storages: StorageConnection;
 };
 
 export type TaskCollaboratorsArgs = {
@@ -261,6 +344,15 @@ export type TaskTimersArgs = {
 };
 
 export type TaskWebhooksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskStoragesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -335,6 +427,12 @@ export type TokenPayload = {
   user: User;
 };
 
+export type UpdateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  enable?: Maybe<Scalars["Boolean"]>;
+};
+
 export type UpdateTaskInput = {
   name?: Maybe<Scalars["String"]>;
   code?: Maybe<Scalars["String"]>;
@@ -368,9 +466,19 @@ export type User = {
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   tasks: TaskConnection;
+  storages: StorageConnection;
 };
 
 export type UserTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type UserStoragesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -402,17 +510,17 @@ export type Webhook = {
   updatedAt: Scalars["DateTime"];
 };
 
+export type WebhookConnection = {
+  __typename?: "WebhookConnection";
+  edges: Array<WebhookEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
 export type WebhookEdge = {
   __typename?: "WebhookEdge";
   node: Webhook;
   cursor: Scalars["String"];
-};
-
-export type WebookConnection = {
-  __typename?: "WebookConnection";
-  edges: Array<WebhookEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
 };
 
 export type UserFragment = { __typename?: "User" } & Pick<
@@ -441,6 +549,67 @@ export type RefreshTokenMutationVariables = {};
 
 export type RefreshTokenMutation = { __typename?: "Mutation" } & {
   refreshToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token">;
+};
+
+export type StorageFragment = { __typename?: "Storage" } & Pick<
+  Storage,
+  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt"
+>;
+
+export type StorageQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type StorageQuery = { __typename?: "Query" } & {
+  storage: { __typename?: "Storage" } & StorageFragment;
+};
+
+export type StoragesQueryVariables = {
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StoragesQuery = { __typename?: "Query" } & {
+  storages: { __typename?: "StorageConnection" } & Pick<
+    StorageConnection,
+    "totalCount"
+  > & {
+      pageInfo: { __typename?: "PageInfo" } & Pick<
+        PageInfo,
+        "hasNextPage" | "endCursor"
+      >;
+      edges: Array<
+        { __typename?: "StorageEdge" } & {
+          node: { __typename?: "Storage" } & StorageFragment;
+        }
+      >;
+    };
+};
+
+export type DeleteStorageMutationVariables = {
+  id: Scalars["ID"];
+};
+
+export type DeleteStorageMutation = { __typename?: "Mutation" } & {
+  deleteStorage: { __typename?: "Storage" } & StorageFragment;
+};
+
+export type CreateStorageMutationVariables = {
+  input: CreateStorageInput;
+};
+
+export type CreateStorageMutation = { __typename?: "Mutation" } & {
+  createStorage: { __typename?: "Storage" } & StorageFragment;
+};
+
+export type UpdateStorageMutationVariables = {
+  id: Scalars["ID"];
+  input: UpdateStorageInput;
+};
+
+export type UpdateStorageMutation = { __typename?: "Mutation" } & {
+  updateStorage: { __typename?: "Storage" } & StorageFragment;
 };
 
 export type TaskFragment = { __typename?: "Task" } & Pick<
@@ -590,8 +759,8 @@ export type WebhooksQueryVariables = {
 
 export type WebhooksQuery = { __typename?: "Query" } & {
   task: { __typename?: "Task" } & Pick<Task, "id"> & {
-      webhooks: { __typename?: "WebookConnection" } & Pick<
-        WebookConnection,
+      webhooks: { __typename?: "WebhookConnection" } & Pick<
+        WebhookConnection,
         "totalCount"
       > & {
           edges: Array<
@@ -637,6 +806,16 @@ export const UserFragmentDoc = gql`
     id
     name
     email
+  }
+`;
+export const StorageFragmentDoc = gql`
+  fragment Storage on Storage {
+    id
+    name
+    enable
+    key
+    updatedAt
+    createdAt
   }
 `;
 export const TaskFragmentDoc = gql`
@@ -826,6 +1005,279 @@ export type RefreshTokenMutationResult = ApolloReactCommon.MutationResult<
 export type RefreshTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
   RefreshTokenMutation,
   RefreshTokenMutationVariables
+>;
+export const StorageDocument = gql`
+  query Storage($id: ID!) {
+    storage(id: $id) {
+      ...Storage
+    }
+  }
+  ${StorageFragmentDoc}
+`;
+
+/**
+ * __useStorageQuery__
+ *
+ * To run a query within a React component, call `useStorageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStorageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStorageQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useStorageQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    StorageQuery,
+    StorageQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<StorageQuery, StorageQueryVariables>(
+    StorageDocument,
+    baseOptions
+  );
+}
+export function useStorageLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    StorageQuery,
+    StorageQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<StorageQuery, StorageQueryVariables>(
+    StorageDocument,
+    baseOptions
+  );
+}
+export type StorageQueryHookResult = ReturnType<typeof useStorageQuery>;
+export type StorageLazyQueryHookResult = ReturnType<typeof useStorageLazyQuery>;
+export type StorageQueryResult = ApolloReactCommon.QueryResult<
+  StorageQuery,
+  StorageQueryVariables
+>;
+export const StoragesDocument = gql`
+  query Storages($after: String, $query: String, $orderBy: [Ordering]) {
+    storages(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...Storage
+        }
+      }
+    }
+  }
+  ${StorageFragmentDoc}
+`;
+
+/**
+ * __useStoragesQuery__
+ *
+ * To run a query within a React component, call `useStoragesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStoragesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStoragesQuery({
+ *   variables: {
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useStoragesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    StoragesQuery,
+    StoragesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<StoragesQuery, StoragesQueryVariables>(
+    StoragesDocument,
+    baseOptions
+  );
+}
+export function useStoragesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    StoragesQuery,
+    StoragesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<StoragesQuery, StoragesQueryVariables>(
+    StoragesDocument,
+    baseOptions
+  );
+}
+export type StoragesQueryHookResult = ReturnType<typeof useStoragesQuery>;
+export type StoragesLazyQueryHookResult = ReturnType<
+  typeof useStoragesLazyQuery
+>;
+export type StoragesQueryResult = ApolloReactCommon.QueryResult<
+  StoragesQuery,
+  StoragesQueryVariables
+>;
+export const DeleteStorageDocument = gql`
+  mutation DeleteStorage($id: ID!) {
+    deleteStorage(id: $id) {
+      ...Storage
+    }
+  }
+  ${StorageFragmentDoc}
+`;
+export type DeleteStorageMutationFn = ApolloReactCommon.MutationFunction<
+  DeleteStorageMutation,
+  DeleteStorageMutationVariables
+>;
+
+/**
+ * __useDeleteStorageMutation__
+ *
+ * To run a mutation, you first call `useDeleteStorageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteStorageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteStorageMutation, { data, loading, error }] = useDeleteStorageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteStorageMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeleteStorageMutation,
+    DeleteStorageMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeleteStorageMutation,
+    DeleteStorageMutationVariables
+  >(DeleteStorageDocument, baseOptions);
+}
+export type DeleteStorageMutationHookResult = ReturnType<
+  typeof useDeleteStorageMutation
+>;
+export type DeleteStorageMutationResult = ApolloReactCommon.MutationResult<
+  DeleteStorageMutation
+>;
+export type DeleteStorageMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteStorageMutation,
+  DeleteStorageMutationVariables
+>;
+export const CreateStorageDocument = gql`
+  mutation CreateStorage($input: CreateStorageInput!) {
+    createStorage(input: $input) {
+      ...Storage
+    }
+  }
+  ${StorageFragmentDoc}
+`;
+export type CreateStorageMutationFn = ApolloReactCommon.MutationFunction<
+  CreateStorageMutation,
+  CreateStorageMutationVariables
+>;
+
+/**
+ * __useCreateStorageMutation__
+ *
+ * To run a mutation, you first call `useCreateStorageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateStorageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createStorageMutation, { data, loading, error }] = useCreateStorageMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateStorageMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateStorageMutation,
+    CreateStorageMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateStorageMutation,
+    CreateStorageMutationVariables
+  >(CreateStorageDocument, baseOptions);
+}
+export type CreateStorageMutationHookResult = ReturnType<
+  typeof useCreateStorageMutation
+>;
+export type CreateStorageMutationResult = ApolloReactCommon.MutationResult<
+  CreateStorageMutation
+>;
+export type CreateStorageMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateStorageMutation,
+  CreateStorageMutationVariables
+>;
+export const UpdateStorageDocument = gql`
+  mutation UpdateStorage($id: ID!, $input: UpdateStorageInput!) {
+    updateStorage(id: $id, input: $input) {
+      ...Storage
+    }
+  }
+  ${StorageFragmentDoc}
+`;
+export type UpdateStorageMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateStorageMutation,
+  UpdateStorageMutationVariables
+>;
+
+/**
+ * __useUpdateStorageMutation__
+ *
+ * To run a mutation, you first call `useUpdateStorageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateStorageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateStorageMutation, { data, loading, error }] = useUpdateStorageMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateStorageMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    UpdateStorageMutation,
+    UpdateStorageMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    UpdateStorageMutation,
+    UpdateStorageMutationVariables
+  >(UpdateStorageDocument, baseOptions);
+}
+export type UpdateStorageMutationHookResult = ReturnType<
+  typeof useUpdateStorageMutation
+>;
+export type UpdateStorageMutationResult = ApolloReactCommon.MutationResult<
+  UpdateStorageMutation
+>;
+export type UpdateStorageMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateStorageMutation,
+  UpdateStorageMutationVariables
 >;
 export const TaskDocument = gql`
   query Task($id: ID!) {
