@@ -93,7 +93,7 @@
     "xlsx": "^0.16.0"
   },
   "devDependencies": {
-    "@ant-design/pro-cli": "^1.0.14",
+    "@ant-design/pro-cli": "^2.0.2",
     "@babel/core": "^7.9.6",
     "@graphql-codegen/cli": "^1.13.5",
     "@graphql-codegen/fragment-matcher": "^1.13.5",
