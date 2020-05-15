@@ -54,7 +54,7 @@ export default [
               {
                 path: "/storage",
                 name: "缓存管理",
-                component: "./storage/StorageManager",
+                component: "./storage",
               },
               {
                 component: "./404",

@@ -553,7 +553,7 @@ export type RefreshTokenMutation = { __typename?: "Mutation" } & {
 
 export type StorageFragment = { __typename?: "Storage" } & Pick<
   Storage,
-  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt"
+  "id" | "name" | "enable" | "key" | "ownerId" | "updatedAt" | "createdAt"
 >;
 
 export type StorageQueryVariables = {
@@ -814,6 +814,7 @@ export const StorageFragmentDoc = gql`
     name
     enable
     key
+    ownerId
     updatedAt
     createdAt
   }

@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Form, Input, Modal, Switch } from "antd";
-import React, { FC, useEffect } from "react";
+import React, { SFC, useEffect } from "react";
 
-import { TimerFragment } from "@/generated/graphql";
+import { StorageFragment } from "@/generated/graphql";
 
-interface EditTimerModalProps {
-  current: TimerFragment;
+interface EditStorageModalProps {
+  current: StorageFragment;
   visible: boolean;
-  onOk: (values: TimerFragment) => void;
+  onOk: (values: StorageFragment) => void;
   onCancel: () => void;
 }
 
@@ -15,8 +15,12 @@ const formLayout = {
   labelCol: { span: 7 },
   wrapperCol: { span: 13 },
 };
-const EditTimer: FC<EditTimerModalProps> = (props) => {
-  const { visible, onOk, onCancel, current } = props;
+const EditStorage: SFC<EditStorageModalProps> = ({
+  visible,
+  onOk,
+  onCancel,
+  current,
+}) => {
   const [form] = Form.useForm();
   useEffect(() => {
     if (form && !visible) {
@@ -33,7 +37,8 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
     if (!form) return;
     form.submit();
   };
-  const handleFinish = (values: TimerFragment) => {
+
+  const handleFinish = (values: StorageFragment) => {
     if (onOk) {
       onOk(values);
     }
@@ -49,7 +54,7 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
     <div>
       <Modal
         forceRender
-        title="编辑定时器"
+        title="编辑缓存"
         visible={visible}
         {...modalFooter}
         width={600}
@@ -61,19 +66,20 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
             name="enable"
             valuePropName="checked"
           >
-            <Switch />
+            <Switch defaultChecked={false} />
           </Form.Item>
           <Form.Item
-            label="定时器名称"
+            label="名称"
             name="name"
-            rules={[{ required: true, message: "定时器名称" }]}
+            rules={[{ required: true, message: "名称" }]}
           >
             <Input placeholder="请输入" />
           </Form.Item>
+
           <Form.Item
-            label="cron"
-            name="cron"
-            rules={[{ required: true, message: "cron" }]}
+            label="key"
+            name="key"
+            rules={[{ required: true, message: "key" }]}
           >
             <Input placeholder="请输入" />
           </Form.Item>
@@ -83,4 +89,4 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
   );
 };
 
-export default EditTimer;
+export default EditStorage;

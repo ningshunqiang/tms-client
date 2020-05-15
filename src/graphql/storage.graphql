@@ -3,6 +3,7 @@ fragment Storage on Storage {
   name
   enable
   key
+  ownerId
   updatedAt
   createdAt
 }

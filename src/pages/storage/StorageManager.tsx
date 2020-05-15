@@ -2,7 +2,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable prettier/prettier */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
-import copy from "copy-to-clipboard";
 import React, {
   ReactElement,
   ReactNode,
@@ -14,60 +13,54 @@ import React, {
 
 import { QueryTable } from "@/components/QueryTable/QueryTable";
 import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
-import { useWebhook, WebhookProvider } from "@/contexts/task/WebhookContext";
+import { StorageProvider, useStorage } from "@/contexts/storage/StorageContext";
 import {
-  TaskFragment,
-  useCreateWebhookMutation,
-  useDeleteWebhookMutation,
-  useUpdatedWebhookMutation,
-  useWebhooksQuery,
-  WebhookFragment,
-  WebhooksQuery,
+  StorageFragment,
+  StoragesQuery,
+  useCreateStorageMutation,
+  useDeleteStorageMutation,
+  useStoragesQuery,
+  useUpdateStorageMutation,
 } from "@/generated/graphql";
 
-import EditWebhook from "./components/EditWebhook";
+import EditStorage from "./components/EditStorage";
 
-interface WebhookProps {
-  id: TaskFragment["id"];
-}
-
-const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
+const Storage: SFC = (): ReactElement => {
   const [
-    handleUpdateWebhook,
+    handleUpdateStorage,
     { loading: upDataLoading },
-  ] = useUpdatedWebhookMutation();
+  ] = useUpdateStorageMutation();
   const [
-    handleCreateWebhook,
+    handleCreateStorage,
     { loading: createLoading },
-  ] = useCreateWebhookMutation();
+  ] = useCreateStorageMutation();
 
   const [visible, setVisible] = useState(false);
-  const [current, setCurrent] = useState<WebhookFragment>();
-  const { queryParams, setQueryParams } = useWebhook();
+  const [current, setCurrent] = useState<StorageFragment>();
+  const { queryParams, setQueryParams } = useStorage();
 
-  const { data, loading, refetch, fetchMore } = useWebhooksQuery({
+  const { data, loading, refetch, fetchMore } = useStoragesQuery({
     variables: {
-      taskId: id,
       query: queryParams?.query,
     },
   });
 
   const [
-    handleDeleteWebhook,
+    handleDeleteStorage,
     { loading: deleteLoading },
-  ] = useDeleteWebhookMutation();
+  ] = useDeleteStorageMutation();
 
   const handleDeleteClick = useCallback(
-    async (webhook): Promise<void> => {
+    async (storage): Promise<void> => {
       try {
-        await handleDeleteWebhook({ variables: { id: webhook.id } });
+        await handleDeleteStorage({ variables: { id: storage.id } });
         message.success("删除成功！");
         refetch();
       } catch {
         message.error("删除失败！");
       }
     },
-    [handleDeleteWebhook, refetch]
+    [handleDeleteStorage, refetch]
   );
 
   const handleOnCancel = () => {
@@ -75,12 +68,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     setVisible(false);
   };
 
-  const handleOnOk = async (value: WebhookFragment) => {
+  const handleOnOk = async (value: StorageFragment) => {
     if (current?.id) {
       try {
         setVisible(false);
 
-        await handleUpdateWebhook({
+        await handleUpdateStorage({
           variables: { id: current.id, input: value },
         });
         setCurrent(null);
@@ -91,11 +84,10 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     } else {
       try {
         setVisible(false);
-        await handleCreateWebhook({
+        await handleCreateStorage({
           variables: {
             input: {
               ...value,
-              taskId: id,
             },
           },
         });
@@ -109,7 +101,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   };
 
   const columns = useMemo(
-    (): SimpleColumnType<WebhookFragment>[] => [
+    (): SimpleColumnType<StorageFragment>[] => [
       {
         key: "name",
         title: "名称",
@@ -124,14 +116,23 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
       {
         width: 120,
         filterType: FilterType.Input,
-        key: "id",
-        title: "id",
-        dataIndex: "id",
+        key: "key",
+        title: "key",
+        dataIndex: "key",
         copyable: true,
         ellipsis: true,
         sorter: true,
       },
-
+      {
+        width: 120,
+        filterType: FilterType.Input,
+        key: "ownerId",
+        title: "ownerId",
+        dataIndex: "ownerId",
+        copyable: true,
+        ellipsis: true,
+        sorter: true,
+      },
       {
         key: "enable",
         title: "应用状态",
@@ -145,13 +146,14 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
           { text: "关闭", value: false },
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ] as any,
-        render: (value, row: WebhookFragment): ReactNode =>
+        render: (value, row: StorageFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
           ) : (
             <Badge status="default" text="关闭" />
           ),
       },
+
       {
         key: "action",
         title: "操作",
@@ -162,28 +164,15 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         ellipsis: true,
         sorter: true,
 
-        render: (webhook: WebhookFragment): ReactElement => (
+        render: (storage: StorageFragment): ReactElement => (
           <span>
             <>
-              <Divider type="vertical" />
-              <Button
-                type="link"
-                onClick={() => {
-                  copy(`${SERVER_URL}-${webhook.token}`);
-                  message.info("已复制 Webhook 地址到剪切板");
-                }}
-              >
-                复制 Webhook
-              </Button>
-            </>
-            <>
-              <Divider type="vertical" />
               <Divider type="vertical" />
               <Button
                 style={{ padding: 0, border: 0 }}
                 type="link"
                 onClick={(): void => {
-                  setCurrent(webhook);
+                  setCurrent(storage);
                   setVisible(true);
                 }}
               >
@@ -195,8 +184,8 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               <Popconfirm
                 cancelText="取消"
                 okText="确定"
-                title={`删除 ${webhook.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(webhook)}
+                title={`删除 ${storage.name} 任务？`}
+                onConfirm={(): Promise<void> => handleDeleteClick(storage)}
               >
                 <Button style={{ padding: 0, border: 0 }} type="link">
                   删除
@@ -212,15 +201,15 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
   return (
     <Card>
-      <QueryTable<WebhookFragment>
+      <QueryTable<StorageFragment>
         columns={columns}
-        dataSource={data?.task.webhooks.edges.map(
-          ({ node }): WebhookFragment => node
+        dataSource={data?.storages.edges.map(
+          ({ node }): StorageFragment => node
         )}
-        hasMore={data?.task.webhooks.pageInfo.hasNextPage}
-        id="webhook"
+        hasMore={data?.storages.pageInfo.hasNextPage}
+        id="Storage"
         loading={loading || deleteLoading || upDataLoading || createLoading}
-        name="webhook"
+        name="Storage"
         queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
@@ -230,31 +219,29 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               setVisible(true);
             }}
           >
-            创建 Webhook
+            创建 Storage
           </Button>,
         ]}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
-              after: data?.task.webhooks.pageInfo.endCursor,
+              after: data?.storages.pageInfo.endCursor,
             },
             updateQuery: (
               previousResult,
               { fetchMoreResult }
-            ): WebhooksQuery => {
+            ): StoragesQuery => {
               if (!fetchMoreResult) return previousResult;
 
               return {
-                task: {
-                  webhooks: {
-                    __typename: previousResult.task.webhooks.__typename,
-                    totalCount: fetchMoreResult.task.webhooks.totalCount,
-                    pageInfo: fetchMoreResult.task.webhooks.pageInfo,
-                    edges: [
-                      ...previousResult.task.webhooks.edges,
-                      ...fetchMoreResult.task.webhooks.edges,
-                    ],
-                  },
+                storages: {
+                  __typename: previousResult.storages.__typename,
+                  totalCount: fetchMoreResult.storages.totalCount,
+                  pageInfo: fetchMoreResult.storages.pageInfo,
+                  edges: [
+                    ...previousResult.storages.edges,
+                    ...fetchMoreResult.storages.edges,
+                  ],
                 },
               };
             },
@@ -266,7 +253,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         }}
       />
 
-      <EditWebhook
+      <EditStorage
         current={current}
         visible={visible}
         onCancel={handleOnCancel}
@@ -276,10 +263,10 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   );
 };
 
-export default (props: WebhookProps) => {
+export default () => {
   return (
-    <WebhookProvider>
-      <Webhook {...props} />
-    </WebhookProvider>
+    <StorageProvider>
+      <Storage />
+    </StorageProvider>
   );
 };

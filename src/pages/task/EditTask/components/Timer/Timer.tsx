@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable prettier/prettier */
-import { Button, Card, Divider, message, Popconfirm } from "antd";
+import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
   ReactNode,
@@ -130,6 +130,26 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         sorter: true,
       },
 
+      {
+        key: "enable",
+        title: "应用状态",
+        dataIndex: "enable",
+        ellipsis: true,
+        sorter: true,
+
+        width: 120,
+        filters: [
+          { text: "运行", value: true },
+          { text: "关闭", value: false },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ] as any,
+        render: (value, row: TimerFragment): ReactNode =>
+          row.enable ? (
+            <Badge status="processing" text="运行" />
+          ) : (
+            <Badge status="default" text="关闭" />
+          ),
+      },
       {
         key: "action",
         title: "操作",

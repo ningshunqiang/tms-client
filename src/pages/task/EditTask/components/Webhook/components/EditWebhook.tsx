@@ -60,13 +60,19 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
         width={600}
       >
         <Form {...formLayout} form={form} onFinish={handleFinish}>
-          <Form.Item label="应用状态" name="enable" valuePropName="checked">
+          <Form.Item
+            initialValue={false}
+            label="应用状态"
+            name="enable"
+            valuePropName="checked"
+          >
             <Switch />
           </Form.Item>
           <Form.Item
             label="Webhook名称"
             name="name"
             rules={[{ required: true, message: "Webhook名称" }]}
+            shouldUpdate
           >
             <Input placeholder="请输入" />
           </Form.Item>

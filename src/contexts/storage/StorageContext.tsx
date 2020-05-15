@@ -32,7 +32,7 @@ export function StorageProvider<T>({
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function useTask() {
+export function useStorage() {
   const content = useContext(StorageContext);
 
   if (!content) throw new Error();
