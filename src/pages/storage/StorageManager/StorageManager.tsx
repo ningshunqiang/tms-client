@@ -71,7 +71,6 @@ const Storage: SFC = (): ReactElement => {
       if (current?.id) {
         try {
           setVisible(false);
-
           await handleUpdateStorage({
             variables: { id: current.id, input: value },
           });
@@ -108,7 +107,6 @@ const Storage: SFC = (): ReactElement => {
         title: "名称",
         dataIndex: "name",
         width: 80,
-
         copyable: true,
         ellipsis: true,
         sorter: true,
@@ -140,7 +138,6 @@ const Storage: SFC = (): ReactElement => {
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-
         width: 120,
         filters: [
           { text: "运行", value: true },
@@ -160,10 +157,8 @@ const Storage: SFC = (): ReactElement => {
         align: "right",
         fixed: "right",
         width: 120,
-
         ellipsis: true,
         sorter: true,
-
         render: (storage: StorageFragment): ReactElement => (
           <span>
             <Divider type="vertical" />
@@ -177,7 +172,6 @@ const Storage: SFC = (): ReactElement => {
             >
               编辑
             </Button>
-
             <Divider type="vertical" />
             <Popconfirm
               cancelText="取消"
@@ -211,7 +205,7 @@ const Storage: SFC = (): ReactElement => {
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Button type="primary" onClick={() => setVisible(true)}>
-            创建 Storage
+            创建存储
           </Button>,
         ]}
         onLoadMore={(): void => {
