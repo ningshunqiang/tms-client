@@ -52,9 +52,9 @@ export default [
                 ],
               },
               {
-                path: "/storage",
-                name: "缓存管理",
-                component: "./storage",
+                path: "/storages",
+                name: "存储管理",
+                component: "./storage/StorageManager",
               },
               {
                 component: "./404",

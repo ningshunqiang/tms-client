@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prettier/prettier */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
@@ -23,13 +20,14 @@ import {
   useUpdateStorageMutation,
 } from "@/generated/graphql";
 
-import EditStorage from "./components/EditStorage";
+import EditStorage from "../components/EditStorage";
 
 const Storage: SFC = (): ReactElement => {
   const [
     handleUpdateStorage,
     { loading: upDataLoading },
   ] = useUpdateStorageMutation();
+
   const [
     handleCreateStorage,
     { loading: createLoading },
@@ -144,9 +142,8 @@ const Storage: SFC = (): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ] as any,
-        render: (value, row: StorageFragment): ReactNode =>
+        render: (row: StorageFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
           ) : (
