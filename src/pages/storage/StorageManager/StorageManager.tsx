@@ -166,32 +166,29 @@ const Storage: SFC = (): ReactElement => {
 
         render: (storage: StorageFragment): ReactElement => (
           <span>
-            <>
-              <Divider type="vertical" />
-              <Button
-                style={{ padding: 0, border: 0 }}
-                type="link"
-                onClick={(): void => {
-                  setCurrent(storage);
-                  setVisible(true);
-                }}
-              >
-                编辑
+            <Divider type="vertical" />
+            <Button
+              style={{ padding: 0, border: 0 }}
+              type="link"
+              onClick={(): void => {
+                setCurrent(storage);
+                setVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+
+            <Divider type="vertical" />
+            <Popconfirm
+              cancelText="取消"
+              okText="确定"
+              title={`删除 ${storage.name} 任务？`}
+              onConfirm={(): Promise<void> => handleDeleteClick(storage)}
+            >
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                删除
               </Button>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Popconfirm
-                cancelText="取消"
-                okText="确定"
-                title={`删除 ${storage.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(storage)}
-              >
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  删除
-                </Button>
-              </Popconfirm>
-            </>
+            </Popconfirm>
           </span>
         ),
       },
@@ -213,12 +210,7 @@ const Storage: SFC = (): ReactElement => {
         queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
-          <Button
-            type="primary"
-            onClick={(): void => {
-              setVisible(true);
-            }}
-          >
+          <Button type="primary" onClick={() => setVisible(true)}>
             创建 Storage
           </Button>,
         ]}
@@ -248,9 +240,7 @@ const Storage: SFC = (): ReactElement => {
           });
         }}
         onQueryParamsChange={setQueryParams}
-        onRefresh={(): void => {
-          refetch();
-        }}
+        onRefresh={() => refetch()}
       />
 
       <EditStorage
