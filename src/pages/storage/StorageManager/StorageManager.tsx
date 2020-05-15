@@ -61,12 +61,12 @@ const Storage: SFC = (): ReactElement => {
     [handleDeleteStorage, refetch]
   );
 
-  const handleOnCancel = () => {
+  const handleCancel = () => {
     setCurrent(null);
     setVisible(false);
   };
 
-  const handleOnOk = async (value: StorageFragment) => {
+  const handleOk = async (value: StorageFragment) => {
     if (current?.id) {
       try {
         setVisible(false);
@@ -253,8 +253,8 @@ const Storage: SFC = (): ReactElement => {
       <EditStorage
         current={current}
         visible={visible}
-        onCancel={handleOnCancel}
-        onOk={handleOnOk}
+        onCancel={handleCancel}
+        onOk={handleOk}
       />
     </Card>
   );
