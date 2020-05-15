@@ -61,42 +61,45 @@ const Storage: SFC = (): ReactElement => {
     [handleDeleteStorage, refetch]
   );
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setCurrent(null);
     setVisible(false);
-  };
+  }, []);
 
-  const handleOk = async (value: StorageFragment) => {
-    if (current?.id) {
-      try {
-        setVisible(false);
+  const handleOk = useCallback(
+    async (value: StorageFragment) => {
+      if (current?.id) {
+        try {
+          setVisible(false);
 
-        await handleUpdateStorage({
-          variables: { id: current.id, input: value },
-        });
-        setCurrent(null);
-        message.success("更新成功");
-      } catch {
-        message.error("更新失败");
-      }
-    } else {
-      try {
-        setVisible(false);
-        await handleCreateStorage({
-          variables: {
-            input: {
-              ...value,
+          await handleUpdateStorage({
+            variables: { id: current.id, input: value },
+          });
+          setCurrent(null);
+          message.success("更新成功");
+        } catch {
+          message.error("更新失败");
+        }
+      } else {
+        try {
+          setVisible(false);
+          await handleCreateStorage({
+            variables: {
+              input: {
+                ...value,
+              },
             },
-          },
-        });
-        setCurrent(null);
-        refetch();
-        message.success("创建成功");
-      } catch {
-        message.error("创建失败");
+          });
+          setCurrent(null);
+          refetch();
+          message.success("创建成功");
+        } catch {
+          message.error("创建失败");
+        }
       }
-    }
-  };
+    },
+    [current, handleCreateStorage, handleUpdateStorage, refetch]
+  );
 
   const columns = useMemo(
     (): SimpleColumnType<StorageFragment>[] => [
