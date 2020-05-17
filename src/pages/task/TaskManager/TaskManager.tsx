@@ -14,23 +14,23 @@ import {
   SimpleColumnType,
   ValueType,
 } from "@/components/SimpleTable";
-import { TaskProvider, useTask } from "@/contexts/task/MyTaskContext";
 import {
   TaskFragment,
   TasksQuery,
   useDeleteTaskMutation,
   useTasksQuery,
 } from "@/generated/graphql";
+import useTasksQueryVariablesState from "@/hooks/variablesStates/useTasksQueryVariablesState";
 
 const MyTask: SFC = (): ReactElement => {
-  const { queryParams, setQueryParams } = useTask();
+  const [variables, setVariables] = useTasksQueryVariablesState();
   const [
     handleDeleteTask,
     { loading: deleteLoading },
   ] = useDeleteTaskMutation();
 
   const { data, loading, refetch, fetchMore } = useTasksQuery({
-    variables: queryParams,
+    variables,
   });
   const handleDeleteClick = useCallback(
     async ({ id }): Promise<void> => {
@@ -157,13 +157,13 @@ const MyTask: SFC = (): ReactElement => {
         id="Tms"
         loading={loading || deleteLoading}
         name="任务管理"
-        queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Link to="tasks/create">
             <Button type="primary">创建任务</Button>
           </Link>,
         ]}
+        variables={variables}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
@@ -185,17 +185,11 @@ const MyTask: SFC = (): ReactElement => {
             },
           });
         }}
-        onQueryParamsChange={setQueryParams}
-        onRefresh={(): void => {
-          refetch();
-        }}
+        onRefresh={() => refetch()}
+        onVariablesChange={setVariables}
       />
     </Card>
   );
 };
 
-export default (): ReactElement => (
-  <TaskProvider>
-    <MyTask />
-  </TaskProvider>
-);
+export default MyTask;

@@ -38,7 +38,7 @@ const StyledButton = styled(Button)`
   padding: 4px 0;
 `;
 
-export interface QueryParams {
+export interface Variables {
   id?: string;
   query?: string;
   orderBy?: Ordering[];
@@ -46,9 +46,9 @@ export interface QueryParams {
 export interface QueryTableProps<T> extends SimpleTableProps<T> {
   dataSource: T[];
   hasMore: boolean;
-  queryParams: QueryParams;
+  variables: Variables;
   onLoadMore?: () => void | Promise<void>;
-  onQueryParamsChange: (queryParams: QueryParams) => void;
+  onVariablesChange: (variables: Variables) => void;
 }
 
 export function QueryTable<T>(props: QueryTableProps<T>) {
@@ -57,9 +57,9 @@ export function QueryTable<T>(props: QueryTableProps<T>) {
     dataSource = [],
     hasMore,
     loading,
-    queryParams = {},
+    variables = {},
     onLoadMore,
-    onQueryParamsChange,
+    onVariablesChange,
   } = props;
 
   const [page, setPage] = useState(1);
@@ -68,7 +68,7 @@ export function QueryTable<T>(props: QueryTableProps<T>) {
   const [popoverVisible, setPopoverVisible] = useState(false);
   const [sortValue, setSortValue] = useState("");
 
-  const [query, setQuery] = useState<string>(queryParams.query || "");
+  const [query, setQuery] = useState<string>(variables.query || "");
 
   // 控件绑定的值，不包含 > <
   const [bindValues, setBindValues] = useState<{
@@ -184,8 +184,8 @@ export function QueryTable<T>(props: QueryTableProps<T>) {
         ? parameterOrderBy.split(" ")
         : sortValue.split(" ");
 
-      const tempQueryParams = {
-        ...queryParams,
+      const tempVariables = {
+        ...variables,
         query: `${parameterQuery || query} ${newFilter}`.trim(),
         orderBy: [
           {
@@ -194,15 +194,15 @@ export function QueryTable<T>(props: QueryTableProps<T>) {
           },
         ],
       };
-      if (tempQueryParams.query === "") {
-        delete tempQueryParams.query;
+      if (tempVariables.query === "") {
+        delete tempVariables.query;
       }
       if (!orderByArr || orderByArr.length !== 2 || parameterOrderBy === "") {
-        delete tempQueryParams.orderBy;
+        delete tempVariables.orderBy;
       }
-      onQueryParamsChange(tempQueryParams);
+      onVariablesChange(tempVariables);
     },
-    [columnsFilterResults, onQueryParamsChange, query, queryParams, sortValue]
+    [columnsFilterResults, onVariablesChange, query, variables, sortValue]
   );
 
   const newColumns = useMemo(

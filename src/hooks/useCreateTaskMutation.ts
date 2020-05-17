@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { useTask } from "@/contexts/task/MyTaskContext";
 import {
   TasksDocument,
   TasksQuery,
@@ -7,15 +5,17 @@ import {
   useCreateTaskMutation,
 } from "@/generated/graphql";
 
+import useTasksQueryVariablesState from "./variablesStates/useTasksQueryVariablesState";
+
 export default () => {
-  const { queryParams } = useTask();
+  const { variables } = useTasksQueryVariablesState();
 
   return useCreateTaskMutation({
     update(cache, mutationResult) {
       if (mutationResult.data) {
         const cacheResult = cache.readQuery<TasksQuery, TasksQueryVariables>({
           query: TasksDocument,
-          variables: queryParams,
+          variables,
         });
 
         if (!cacheResult.tasks.pageInfo.hasNextPage) {
@@ -27,7 +27,7 @@ export default () => {
 
           cache.writeQuery({
             query: TasksDocument,
-            variables: queryParams,
+            variables,
             data: cacheResult,
           });
         }
