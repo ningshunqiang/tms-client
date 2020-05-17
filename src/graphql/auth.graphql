@@ -4,8 +4,8 @@ fragment User on User {
   email
 }
 
-mutation login($email: String!, $password: String!) {
-  login(email: $email, password: $password) {
+mutation GetToken($email: String!, $password: String!) {
+  getToken(email: $email, password: $password) {
     token
     user {
       ...User

@@ -93,7 +93,7 @@ export type Mutation = {
   createUser: User;
   updateUser: User;
   deleteUser: User;
-  login: TokenPayload;
+  getToken: TokenPayload;
   refreshToken: TokenPayload;
 };
 
@@ -166,7 +166,7 @@ export type MutationDeleteUserArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationLoginArgs = {
+export type MutationGetTokenArgs = {
   password: Scalars["String"];
   email: Scalars["String"];
 };
@@ -528,13 +528,13 @@ export type UserFragment = { __typename?: "User" } & Pick<
   "id" | "name" | "email"
 >;
 
-export type LoginMutationVariables = {
+export type GetTokenMutationVariables = {
   email: Scalars["String"];
   password: Scalars["String"];
 };
 
-export type LoginMutation = { __typename?: "Mutation" } & {
-  login: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token"> & {
+export type GetTokenMutation = { __typename?: "Mutation" } & {
+  getToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token"> & {
       user: { __typename?: "User" } & UserFragment;
     };
 };
@@ -851,9 +851,9 @@ export const WebhookFragmentDoc = gql`
     token
   }
 `;
-export const LoginDocument = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+export const GetTokenDocument = gql`
+  mutation GetToken($email: String!, $password: String!) {
+    getToken(email: $email, password: $password) {
       token
       user {
         ...User
@@ -862,47 +862,47 @@ export const LoginDocument = gql`
   }
   ${UserFragmentDoc}
 `;
-export type LoginMutationFn = ApolloReactCommon.MutationFunction<
-  LoginMutation,
-  LoginMutationVariables
+export type GetTokenMutationFn = ApolloReactCommon.MutationFunction<
+  GetTokenMutation,
+  GetTokenMutationVariables
 >;
 
 /**
- * __useLoginMutation__
+ * __useGetTokenMutation__
  *
- * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useGetTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGetTokenMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ * const [getTokenMutation, { data, loading, error }] = useGetTokenMutation({
  *   variables: {
  *      email: // value for 'email'
  *      password: // value for 'password'
  *   },
  * });
  */
-export function useLoginMutation(
+export function useGetTokenMutation(
   baseOptions?: ApolloReactHooks.MutationHookOptions<
-    LoginMutation,
-    LoginMutationVariables
+    GetTokenMutation,
+    GetTokenMutationVariables
   >
 ) {
-  return ApolloReactHooks.useMutation<LoginMutation, LoginMutationVariables>(
-    LoginDocument,
-    baseOptions
-  );
+  return ApolloReactHooks.useMutation<
+    GetTokenMutation,
+    GetTokenMutationVariables
+  >(GetTokenDocument, baseOptions);
 }
-export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
-export type LoginMutationResult = ApolloReactCommon.MutationResult<
-  LoginMutation
+export type GetTokenMutationHookResult = ReturnType<typeof useGetTokenMutation>;
+export type GetTokenMutationResult = ApolloReactCommon.MutationResult<
+  GetTokenMutation
 >;
-export type LoginMutationOptions = ApolloReactCommon.BaseMutationOptions<
-  LoginMutation,
-  LoginMutationVariables
+export type GetTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  GetTokenMutation,
+  GetTokenMutationVariables
 >;
 export const CurrentUserDocument = gql`
   query CurrentUser {
