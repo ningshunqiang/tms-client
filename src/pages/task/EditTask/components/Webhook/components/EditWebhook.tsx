@@ -17,6 +17,7 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
   current,
 }) => {
   const [form] = Form.useForm();
+
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();

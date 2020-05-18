@@ -33,6 +33,7 @@ const MyTask: SFC = (): ReactElement => {
   const { data, loading, refetch, fetchMore } = useTasksQuery({
     variables,
   });
+
   const handleDeleteClick = useCallback(
     async ({ id }): Promise<void> => {
       try {
@@ -53,7 +54,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "名称",
         dataIndex: "name",
         width: 80,
-
         copyable: true,
         ellipsis: true,
         sorter: true,
@@ -61,7 +61,6 @@ const MyTask: SFC = (): ReactElement => {
       },
       {
         width: 120,
-
         key: "id",
         title: "id",
         dataIndex: "id",
@@ -75,7 +74,6 @@ const MyTask: SFC = (): ReactElement => {
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-
         width: 120,
         filters: [
           { text: "运行", value: true },
@@ -93,7 +91,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "创建时间",
         dataIndex: "createdAt",
         width: 120,
-
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,
@@ -103,7 +100,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "更新时间",
         dataIndex: "updatedAt",
         width: 120,
-
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,
@@ -114,33 +110,28 @@ const MyTask: SFC = (): ReactElement => {
         align: "right",
         fixed: "right",
         width: 120,
-
         ellipsis: true,
         sorter: true,
-
         render: (task: TaskFragment): ReactElement => (
           <span>
-            <>
-              <Divider type="vertical" />
-              <Link to={`tasks/${task.id}/edit`}>
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  编辑
-                </Button>
-              </Link>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Popconfirm
-                cancelText="取消"
-                okText="确定"
-                title={`删除 ${task.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(task)}
-              >
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  删除
-                </Button>
-              </Popconfirm>
-            </>
+            <Divider type="vertical" />
+            <Link to={`tasks/${task.id}/edit`}>
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                编辑
+              </Button>
+            </Link>
+
+            <Divider type="vertical" />
+            <Popconfirm
+              cancelText="取消"
+              okText="确定"
+              title={`删除 ${task.name} 任务？`}
+              onConfirm={(): Promise<void> => handleDeleteClick(task)}
+            >
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                删除
+              </Button>
+            </Popconfirm>
           </span>
         ),
       },
