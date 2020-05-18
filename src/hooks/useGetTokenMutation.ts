@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { useHistory } from "react-router";
 
-import { useLoginMutation } from "@/generated/graphql";
+import { useGetTokenMutation } from "@/generated/graphql";
 import { getPageQuery } from "@/utils/utils";
 
-export default (...mutationArgs: Parameters<typeof useLoginMutation>) => {
+export default (...mutationArgs: Parameters<typeof useGetTokenMutation>) => {
   const history = useHistory();
 
-  const tuple = useLoginMutation(...mutationArgs);
+  const tuple = useGetTokenMutation(...mutationArgs);
 
   const temp = tuple[0];
 
@@ -15,7 +15,7 @@ export default (...mutationArgs: Parameters<typeof useLoginMutation>) => {
     const result = await temp(...args);
 
     if (result.data) {
-      localStorage.setItem("token", result.data.login.token);
+      localStorage.setItem("token", result.data.getToken.token);
 
       const urlParams = new URL(window.location.href);
       const params = getPageQuery();
