@@ -128,7 +128,7 @@
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "@umijs/preset-ant-design-pro": "^1.1.2",
-    "@umijs/preset-react": "^1.4.19",
+    "@umijs/preset-react": "^1.4.23",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.6",
     "babel-plugin-styled-components": "^1.10.7",
