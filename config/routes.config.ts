@@ -28,6 +28,7 @@ export default [
                 path: "/",
                 redirect: "/tasks",
               },
+
               {
                 name: "任务管理",
                 path: "/tasks",
@@ -49,6 +50,11 @@ export default [
                     component: "./task/EditTask",
                   },
                 ],
+              },
+              {
+                path: "/storages",
+                name: "存储管理",
+                component: "./storage/StorageManager",
               },
               {
                 component: "./404",
