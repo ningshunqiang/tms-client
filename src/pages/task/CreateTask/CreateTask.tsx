@@ -17,6 +17,7 @@ const CreateTask: SFC = (): ReactElement => {
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
   const [handleCreateTask, { loading }] = useCreateTask();
+
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
       enable,

@@ -29,6 +29,7 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
       });
     }
   }, [visible, current, form]);
+
   const handleSubmit = () => {
     if (!form) return;
     form.submit();
@@ -55,7 +56,7 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
         <Form
           form={form}
           labelCol={{ span: 7 }}
-          wrapperCol={{ span: 3 }}
+          wrapperCol={{ span: 13 }}
           onFinish={handleFinish}
         >
           <Form.Item

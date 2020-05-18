@@ -64,12 +64,12 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
     [handleDeleteTimer, refetch]
   );
 
-  const handleOnCancel = useCallback(() => {
+  const handleCancel = useCallback(() => {
     setCurrent(null);
     setVisible(false);
   }, []);
 
-  const handleOnOk = async (value: TimerFragment) => {
+  const handleOk = async (value: TimerFragment) => {
     if (current?.id) {
       try {
         setVisible(false);
@@ -125,7 +125,6 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         ellipsis: true,
         sorter: true,
       },
-
       {
         key: "enable",
         title: "应用状态",
@@ -244,8 +243,8 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         <EditTimer
           current={current}
           visible={visible}
-          onCancel={handleOnCancel}
-          onOk={handleOnOk}
+          onCancel={handleCancel}
+          onOk={handleOk}
         />
       </Card>
     </div>

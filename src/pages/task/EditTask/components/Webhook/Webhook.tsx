@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import copy from "copy-to-clipboard";
 import React, {
@@ -68,12 +67,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     [handleDeleteWebhook, refetch]
   );
 
-  const handleOnCancel = useCallback(() => {
+  const handleCancel = useCallback(() => {
     setCurrent(null);
     setVisible(false);
   }, []);
 
-  const handleOnOk = async (value: WebhookFragment) => {
+  const handleOk = async (value: WebhookFragment) => {
     if (current?.id) {
       try {
         setVisible(false);
@@ -161,6 +160,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             <Button
               type="link"
               onClick={() => {
+                // eslint-disable-next-line no-undef
                 copy(`${SERVER_URL}-${webhook.token}`);
                 message.info("已复制 Webhook 地址到剪切板");
               }}
@@ -256,8 +256,8 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
       <EditWebhook
         current={current}
         visible={visible}
-        onCancel={handleOnCancel}
-        onOk={handleOnOk}
+        onCancel={handleCancel}
+        onOk={handleOk}
       />
     </Card>
   );
