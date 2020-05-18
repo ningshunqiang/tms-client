@@ -3,7 +3,6 @@ import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
 import React, { ReactElement, SFC, useEffect, useState } from "react";
 
-import { TaskProvider } from "@/contexts/task/MyTaskContext";
 import {
   TaskFragment,
   useTaskQuery,
@@ -20,6 +19,7 @@ interface CreateTask {
   code: string;
   name: string;
 }
+
 const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const { data } = useTaskQuery({
     variables: { id },
@@ -28,6 +28,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
+
   useEffect(() => {
     if (data) {
       setCode(data.task.code);
@@ -35,6 +36,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       setName(data.task.name);
     }
   }, [data]);
+
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
       enable,
@@ -72,7 +74,6 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
             </Form.Item>
           </Col>
         </Row>
-
         <Row gutter={16}>
           <Col span={24}>
             <Form.Item label="代码">
@@ -106,8 +107,4 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     </Card>
   );
 };
-export default (props: CreateTaskProps): ReactElement => (
-  <TaskProvider>
-    <CreateTask {...props} />
-  </TaskProvider>
-);
+export default CreateTask;

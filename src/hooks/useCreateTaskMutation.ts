@@ -8,7 +8,7 @@ import {
 import useTasksQueryVariablesState from "./variablesStates/useTasksQueryVariablesState";
 
 export default () => {
-  const { variables } = useTasksQueryVariablesState();
+  const [variables] = useTasksQueryVariablesState();
 
   return useCreateTaskMutation({
     update(cache, mutationResult) {
@@ -19,7 +19,6 @@ export default () => {
         });
 
         if (!cacheResult.tasks.pageInfo.hasNextPage) {
-          // 分页
           cacheResult.tasks.edges.push({
             node: mutationResult.data.createTask,
             __typename: "TaskEdge",

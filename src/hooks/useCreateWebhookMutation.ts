@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { useWebhook } from "@/contexts/task/WebhookContext";
 import {
   useCreateWebhookMutation,
   WebhooksDocument,
@@ -7,8 +5,10 @@ import {
   WebhooksQueryVariables,
 } from "@/generated/graphql";
 
+import useWebhooksQueryVariablesState from "./variablesStates/useWebhooksQueryVariablesState";
+
 export default () => {
-  const { queryParams } = useWebhook();
+  const [variables] = useWebhooksQueryVariablesState();
   return useCreateWebhookMutation({
     update(cache, mutationResult) {
       if (mutationResult.data) {
@@ -17,19 +17,18 @@ export default () => {
           WebhooksQueryVariables
         >({
           query: WebhooksDocument,
-          variables: queryParams,
+          variables,
         });
 
-        if (!cacheResult.webhooks.pageInfo.hasNextPage) {
-          // 分页
-          cacheResult.webhooks.edges.push({
+        if (!cacheResult.task.webhooks.pageInfo.hasNextPage) {
+          cacheResult.task.webhooks.edges.push({
             node: mutationResult.data.createWebhook,
             __typename: "WebhookEdge",
           });
 
           cache.writeQuery({
             query: WebhooksDocument,
-            variables: queryParams,
+            variables,
             data: cacheResult,
           });
         }

@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prettier/prettier */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
@@ -12,7 +10,6 @@ import React, {
 
 import { QueryTable } from "@/components/QueryTable/QueryTable";
 import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
-import { TimerProvider, useTimer } from "@/contexts/task/TimerContext";
 import {
   TaskFragment,
   TimerFragment,
@@ -22,6 +19,7 @@ import {
   useTimersQuery,
   useUpdatedTimerMutation,
 } from "@/generated/graphql";
+import useTimersQueryVariablesState from "@/hooks/variablesStates/useTimersQueryVariablesState";
 
 import EditTimer from "./components/EditTimer";
 
@@ -30,13 +28,13 @@ interface TimerProps {
 }
 
 const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
+  const [variables, setVariables] = useTimersQueryVariablesState();
   const [
     handleUpdateTimer,
     { loading: upDataLoading },
   ] = useUpdatedTimerMutation();
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<TimerFragment>();
-  const { queryParams, setQueryParams } = useTimer();
   const [
     handleCreateTimer,
     { loading: createLoading },
@@ -44,7 +42,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
   const { data, loading, refetch, fetchMore } = useTimersQuery({
     variables: {
       taskId: id,
-      query: queryParams?.query,
+      ...variables,
     },
   });
 
@@ -66,10 +64,10 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
     [handleDeleteTimer, refetch]
   );
 
-  const handleOnCancel = () => {
+  const handleOnCancel = useCallback(() => {
     setCurrent(null);
     setVisible(false);
-  };
+  }, []);
 
   const handleOnOk = async (value: TimerFragment) => {
     if (current?.id) {
@@ -113,7 +111,6 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         title: "名称",
         dataIndex: "name",
         width: 120,
-
         copyable: true,
         ellipsis: true,
         sorter: true,
@@ -121,7 +118,6 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
       },
       {
         width: 120,
-
         key: "cron",
         title: "cron",
         dataIndex: "cron",
@@ -136,12 +132,10 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-
         width: 120,
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ] as any,
         render: (value, row: TimerFragment): ReactNode =>
           row.enable ? (
@@ -156,10 +150,8 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         align: "right",
         fixed: "right",
         width: 120,
-
         ellipsis: true,
         sorter: true,
-
         render: (timer: TimerFragment): ReactElement => (
           <span>
             <>
@@ -207,7 +199,6 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
           id="timer"
           loading={loading || deleteLoading || upDataLoading || createLoading}
           name="timer"
-          queryParams={queryParams}
           rowKey="id"
           toolBarRender={(): ReactNode[] => [
             <Button
@@ -219,6 +210,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
               创建定时器
             </Button>,
           ]}
+          variables={variables}
           onLoadMore={(): void => {
             fetchMore({
               variables: {
@@ -229,9 +221,9 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
                 { fetchMoreResult }
               ): TimersQuery => {
                 if (!fetchMoreResult) return previousResult;
-
                 return {
                   task: {
+                    id: fetchMoreResult.task.id,
                     timers: {
                       __typename: previousResult.task.timers.__typename,
                       totalCount: fetchMoreResult.task.timers.totalCount,
@@ -246,10 +238,8 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
               },
             });
           }}
-          onQueryParamsChange={setQueryParams}
-          onRefresh={(): void => {
-            refetch();
-          }}
+          onRefresh={() => refetch()}
+          onVariablesChange={setVariables}
         />
         <EditTimer
           current={current}
@@ -262,10 +252,4 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
   );
 };
 
-export default (props: TimerProps) => {
-  return (
-    <TimerProvider>
-      <Timer {...props} />
-    </TimerProvider>
-  );
-};
+export default Timer;

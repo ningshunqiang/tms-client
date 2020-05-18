@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
@@ -10,7 +11,6 @@ import React, {
 
 import { QueryTable } from "@/components/QueryTable/QueryTable";
 import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
-import { StorageProvider, useStorage } from "@/contexts/storage/StorageContext";
 import {
   StorageFragment,
   StoragesQuery,
@@ -19,10 +19,12 @@ import {
   useStoragesQuery,
   useUpdateStorageMutation,
 } from "@/generated/graphql";
+import useStoragesQueryVariablesState from "@/hooks/variablesStates/useStoragesQueryVariablesState";
 
 import EditStorage from "../components/EditStorage";
 
 const Storage: SFC = (): ReactElement => {
+  const [variables, setVariables] = useStoragesQueryVariablesState();
   const [
     handleUpdateStorage,
     { loading: upDataLoading },
@@ -35,12 +37,9 @@ const Storage: SFC = (): ReactElement => {
 
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<StorageFragment>();
-  const { queryParams, setQueryParams } = useStorage();
 
   const { data, loading, refetch, fetchMore } = useStoragesQuery({
-    variables: {
-      query: queryParams?.query,
-    },
+    variables,
   });
 
   const [
@@ -143,7 +142,7 @@ const Storage: SFC = (): ReactElement => {
           { text: "运行", value: true },
           { text: "关闭", value: false },
         ] as any,
-        render: (row: StorageFragment): ReactNode =>
+        render: (value, row: StorageFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
           ) : (
@@ -201,13 +200,13 @@ const Storage: SFC = (): ReactElement => {
         id="Storage"
         loading={loading || deleteLoading || upDataLoading || createLoading}
         name="Storage"
-        queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Button type="primary" onClick={() => setVisible(true)}>
             创建存储
           </Button>,
         ]}
+        variables={variables}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
@@ -233,8 +232,8 @@ const Storage: SFC = (): ReactElement => {
             },
           });
         }}
-        onQueryParamsChange={setQueryParams}
         onRefresh={() => refetch()}
+        onVariablesChange={setVariables}
       />
 
       <EditStorage
@@ -247,10 +246,4 @@ const Storage: SFC = (): ReactElement => {
   );
 };
 
-export default () => {
-  return (
-    <StorageProvider>
-      <Storage />
-    </StorageProvider>
-  );
-};
+export default Storage;

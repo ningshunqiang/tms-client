@@ -15,9 +15,11 @@ const formLayout = {
   labelCol: { span: 7 },
   wrapperCol: { span: 13 },
 };
+
 const EditTimer: FC<EditTimerModalProps> = (props) => {
   const { visible, onOk, onCancel, current } = props;
   const [form] = Form.useForm();
+
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -29,15 +31,18 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
       });
     }
   }, [visible, current, form]);
+
   const handleSubmit = () => {
     if (!form) return;
     form.submit();
   };
+
   const handleFinish = (values: TimerFragment) => {
     if (onOk) {
       onOk(values);
     }
   };
+
   const modalFooter = {
     okText: "保存",
     onOk: handleSubmit,

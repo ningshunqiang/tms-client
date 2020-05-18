@@ -1,6 +1,4 @@
 /* eslint-disable no-undef */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prettier/prettier */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import copy from "copy-to-clipboard";
 import React, {
@@ -14,7 +12,6 @@ import React, {
 
 import { QueryTable } from "@/components/QueryTable/QueryTable";
 import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
-import { useWebhook, WebhookProvider } from "@/contexts/task/WebhookContext";
 import {
   TaskFragment,
   useCreateWebhookMutation,
@@ -24,6 +21,7 @@ import {
   WebhookFragment,
   WebhooksQuery,
 } from "@/generated/graphql";
+import useWebhooksQueryVariablesState from "@/hooks/variablesStates/useWebhooksQueryVariablesState";
 
 import EditWebhook from "./components/EditWebhook";
 
@@ -43,12 +41,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<WebhookFragment>();
-  const { queryParams, setQueryParams } = useWebhook();
+  const { variables, setVariables } = useWebhooksQueryVariablesState();
 
   const { data, loading, refetch, fetchMore } = useWebhooksQuery({
     variables: {
       taskId: id,
-      query: queryParams?.query,
+      ...variables,
     },
   });
 
@@ -221,7 +219,6 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         id="webhook"
         loading={loading || deleteLoading || upDataLoading || createLoading}
         name="webhook"
-        queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Button
@@ -233,6 +230,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             创建 Webhook
           </Button>,
         ]}
+        variables={variables}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
@@ -246,6 +244,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
               return {
                 task: {
+                  id: fetchMoreResult.task.id,
                   webhooks: {
                     __typename: previousResult.task.webhooks.__typename,
                     totalCount: fetchMoreResult.task.webhooks.totalCount,
@@ -260,10 +259,8 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             },
           });
         }}
-        onQueryParamsChange={setQueryParams}
-        onRefresh={(): void => {
-          refetch();
-        }}
+        onRefresh={() => refetch()}
+        onVariablesChange={() => setVariables}
       />
 
       <EditWebhook
@@ -276,10 +273,4 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   );
 };
 
-export default (props: WebhookProps) => {
-  return (
-    <WebhookProvider>
-      <Webhook {...props} />
-    </WebhookProvider>
-  );
-};
+export default Webhook;

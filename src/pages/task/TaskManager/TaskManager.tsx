@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
@@ -79,7 +80,6 @@ const MyTask: SFC = (): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ] as any,
         render: (value, row: TaskFragment): ReactNode =>
           row.enable ? (
