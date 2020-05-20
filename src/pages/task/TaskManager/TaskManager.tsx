@@ -24,26 +24,23 @@ import useTasksQueryVariablesState from "@/hooks/variablesStates/useTasksQueryVa
 
 const MyTask: SFC = (): ReactElement => {
   const [variables, setVariables] = useTasksQueryVariablesState();
-  const [
-    handleDeleteTask,
-    { loading: deleteLoading },
-  ] = useDeleteTaskMutation();
+  const [deleteTask, { loading: deleteLoading }] = useDeleteTaskMutation();
 
   const { data, loading, refetch, fetchMore } = useTasksQuery({
     variables,
   });
 
-  const handleDeleteClick = useCallback(
+  const deleteClick = useCallback(
     async ({ id }): Promise<void> => {
       try {
-        await handleDeleteTask({ variables: { id } });
+        await deleteTask({ variables: { id } });
         message.success("删除成功！");
         refetch();
       } catch {
         message.error("删除失败！");
       }
     },
-    [handleDeleteTask, refetch]
+    [deleteTask, refetch]
   );
 
   const columns = useMemo(
@@ -77,7 +74,7 @@ const MyTask: SFC = (): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-        ] as any,
+        ],
         render: (value, row: TaskFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
@@ -106,14 +103,12 @@ const MyTask: SFC = (): ReactElement => {
       {
         key: "action",
         title: "操作",
-        align: "right",
         fixed: "right",
-        width: 120,
+        width: 80,
         ellipsis: true,
         sorter: true,
         render: (task: TaskFragment): ReactElement => (
           <span>
-            <Divider type="vertical" />
             <Link to={`tasks/${task.id}/edit`}>
               <Button style={{ padding: 0, border: 0 }} type="link">
                 编辑
@@ -125,7 +120,7 @@ const MyTask: SFC = (): ReactElement => {
               cancelText="取消"
               okText="确定"
               title={`删除 ${task.name} 任务？`}
-              onConfirm={(): Promise<void> => handleDeleteClick(task)}
+              onConfirm={(): Promise<void> => deleteClick(task)}
             >
               <Button style={{ padding: 0, border: 0 }} type="link">
                 删除
@@ -135,7 +130,7 @@ const MyTask: SFC = (): ReactElement => {
         ),
       },
     ],
-    [handleDeleteClick]
+    [deleteClick]
   );
 
   return (

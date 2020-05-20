@@ -29,16 +29,10 @@ interface TimerProps {
 
 const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
   const [variables, setVariables] = useTimersQueryVariablesState();
-  const [
-    handleUpdateTimer,
-    { loading: upDataLoading },
-  ] = useUpdatedTimerMutation();
+  const [updateTimer, { loading: upDateLoading }] = useUpdatedTimerMutation();
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<TimerFragment>();
-  const [
-    handleCreateTimer,
-    { loading: createLoading },
-  ] = useCreateTimerMutation();
+  const [createTimer, { loading: createLoading }] = useCreateTimerMutation();
   const { data, loading, refetch, fetchMore } = useTimersQuery({
     variables: {
       taskId: id,
@@ -46,22 +40,19 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
     },
   });
 
-  const [
-    handleDeleteTimer,
-    { loading: deleteLoading },
-  ] = useDeleteTimerMutation();
+  const [deleteTimer, { loading: deleteLoading }] = useDeleteTimerMutation();
 
-  const handleDeleteClick = useCallback(
+  const deleteClick = useCallback(
     async (timer): Promise<void> => {
       try {
-        await handleDeleteTimer({ variables: { id: timer.id } });
+        await deleteTimer({ variables: { id: timer.id } });
         message.success("删除成功！");
         refetch();
       } catch {
         message.error("删除失败！");
       }
     },
-    [handleDeleteTimer, refetch]
+    [deleteTimer, refetch]
   );
 
   const handleCancel = useCallback(() => {
@@ -74,7 +65,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
       try {
         setVisible(false);
 
-        await handleUpdateTimer({
+        await updateTimer({
           variables: { id: current.id, input: value },
         });
         setCurrent(null);
@@ -85,7 +76,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
     } else {
       try {
         setVisible(false);
-        await handleCreateTimer({
+        await createTimer({
           variables: {
             input: {
               ...value,
@@ -135,7 +126,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-        ] as any,
+        ],
         render: (value, row: TimerFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
@@ -146,44 +137,39 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
       {
         key: "action",
         title: "操作",
-        align: "right",
         fixed: "right",
-        width: 120,
+        width: 50,
         ellipsis: true,
         sorter: true,
         render: (timer: TimerFragment): ReactElement => (
           <span>
-            <>
-              <Divider type="vertical" />
-              <Button
-                style={{ padding: 0, border: 0 }}
-                type="link"
-                onClick={(): void => {
-                  setCurrent(timer);
-                  setVisible(true);
-                }}
-              >
-                编辑
+            <Button
+              style={{ padding: 0, border: 0 }}
+              type="link"
+              onClick={(): void => {
+                setCurrent(timer);
+                setVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+
+            <Divider type="vertical" />
+            <Popconfirm
+              cancelText="取消"
+              okText="确定"
+              title={`删除 ${timer.name} 任务？`}
+              onConfirm={(): Promise<void> => deleteClick(timer)}
+            >
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                删除
               </Button>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Popconfirm
-                cancelText="取消"
-                okText="确定"
-                title={`删除 ${timer.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(timer)}
-              >
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  删除
-                </Button>
-              </Popconfirm>
-            </>
+            </Popconfirm>
           </span>
         ),
       },
     ],
-    [handleDeleteClick]
+    [deleteClick]
   );
 
   return (
@@ -196,7 +182,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
           )}
           hasMore={data?.task.timers.pageInfo.hasNextPage}
           id="timer"
-          loading={loading || deleteLoading || upDataLoading || createLoading}
+          loading={loading || deleteLoading || upDateLoading || createLoading}
           name="timer"
           rowKey="id"
           toolBarRender={(): ReactNode[] => [

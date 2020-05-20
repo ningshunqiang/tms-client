@@ -16,7 +16,7 @@ const CreateTask: SFC = (): ReactElement => {
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
-  const [handleCreateTask, { loading }] = useCreateTask();
+  const [createTask, { loading }] = useCreateTask();
 
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
@@ -25,7 +25,7 @@ const CreateTask: SFC = (): ReactElement => {
       name,
     };
     try {
-      await handleCreateTask({ variables: { input: task } });
+      await createTask({ variables: { input: task } });
       message.success("添加任务成功。");
       setCode(initCode);
       setEnable(false);

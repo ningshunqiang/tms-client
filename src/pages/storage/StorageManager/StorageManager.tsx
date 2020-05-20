@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import React, {
   ReactElement,
@@ -26,12 +25,12 @@ import EditStorage from "../components/EditStorage";
 const Storage: SFC = (): ReactElement => {
   const [variables, setVariables] = useStoragesQueryVariablesState();
   const [
-    handleUpdateStorage,
-    { loading: upDataLoading },
+    updateStorage,
+    { loading: upDateLoading },
   ] = useUpdateStorageMutation();
 
   const [
-    handleCreateStorage,
+    createStorage,
     { loading: createLoading },
   ] = useCreateStorageMutation();
 
@@ -43,21 +42,21 @@ const Storage: SFC = (): ReactElement => {
   });
 
   const [
-    handleDeleteStorage,
+    deleteStorage,
     { loading: deleteLoading },
   ] = useDeleteStorageMutation();
 
-  const handleDeleteClick = useCallback(
+  const deleteClick = useCallback(
     async (storage): Promise<void> => {
       try {
-        await handleDeleteStorage({ variables: { id: storage.id } });
+        await deleteStorage({ variables: { id: storage.id } });
         message.success("删除成功！");
         refetch();
       } catch {
         message.error("删除失败！");
       }
     },
-    [handleDeleteStorage, refetch]
+    [deleteStorage, refetch]
   );
 
   const handleCancel = useCallback(() => {
@@ -70,7 +69,7 @@ const Storage: SFC = (): ReactElement => {
       if (current?.id) {
         try {
           setVisible(false);
-          await handleUpdateStorage({
+          await updateStorage({
             variables: { id: current.id, input: value },
           });
           setCurrent(null);
@@ -81,7 +80,7 @@ const Storage: SFC = (): ReactElement => {
       } else {
         try {
           setVisible(false);
-          await handleCreateStorage({
+          await createStorage({
             variables: {
               input: {
                 ...value,
@@ -96,7 +95,7 @@ const Storage: SFC = (): ReactElement => {
         }
       }
     },
-    [current, handleCreateStorage, handleUpdateStorage, refetch]
+    [current, createStorage, updateStorage, refetch]
   );
 
   const columns = useMemo(
@@ -141,7 +140,7 @@ const Storage: SFC = (): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-        ] as any,
+        ],
         render: (value, row: StorageFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
@@ -153,14 +152,12 @@ const Storage: SFC = (): ReactElement => {
       {
         key: "action",
         title: "操作",
-        align: "right",
         fixed: "right",
-        width: 120,
+        width: 50,
         ellipsis: true,
         sorter: true,
         render: (storage: StorageFragment): ReactElement => (
           <span>
-            <Divider type="vertical" />
             <Button
               style={{ padding: 0, border: 0 }}
               type="link"
@@ -176,7 +173,7 @@ const Storage: SFC = (): ReactElement => {
               cancelText="取消"
               okText="确定"
               title={`删除 ${storage.name} 任务？`}
-              onConfirm={(): Promise<void> => handleDeleteClick(storage)}
+              onConfirm={(): Promise<void> => deleteClick(storage)}
             >
               <Button style={{ padding: 0, border: 0 }} type="link">
                 删除
@@ -186,7 +183,7 @@ const Storage: SFC = (): ReactElement => {
         ),
       },
     ],
-    [handleDeleteClick]
+    [deleteClick]
   );
 
   return (
@@ -198,7 +195,7 @@ const Storage: SFC = (): ReactElement => {
         )}
         hasMore={data?.storages.pageInfo.hasNextPage}
         id="Storage"
-        loading={loading || deleteLoading || upDataLoading || createLoading}
+        loading={loading || deleteLoading || upDateLoading || createLoading}
         name="Storage"
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
