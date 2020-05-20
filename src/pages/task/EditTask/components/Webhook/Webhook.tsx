@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prettier/prettier */
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import copy from "copy-to-clipboard";
 import React, {
@@ -14,7 +11,6 @@ import React, {
 
 import { QueryTable } from "@/components/QueryTable/QueryTable";
 import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
-import { useWebhook, WebhookProvider } from "@/contexts/task/WebhookContext";
 import {
   TaskFragment,
   useCreateWebhookMutation,
@@ -24,6 +20,7 @@ import {
   WebhookFragment,
   WebhooksQuery,
 } from "@/generated/graphql";
+import useWebhooksQueryVariablesState from "@/hooks/variablesStates/useWebhooksQueryVariablesState";
 
 import EditWebhook from "./components/EditWebhook";
 
@@ -43,12 +40,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<WebhookFragment>();
-  const { queryParams, setQueryParams } = useWebhook();
+  const { variables, setVariables } = useWebhooksQueryVariablesState();
 
   const { data, loading, refetch, fetchMore } = useWebhooksQuery({
     variables: {
       taskId: id,
-      query: queryParams?.query,
+      ...variables,
     },
   });
 
@@ -70,12 +67,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     [handleDeleteWebhook, refetch]
   );
 
-  const handleOnCancel = () => {
+  const handleCancel = useCallback(() => {
     setCurrent(null);
     setVisible(false);
-  };
+  }, []);
 
-  const handleOnOk = async (value: WebhookFragment) => {
+  const handleOk = async (value: WebhookFragment) => {
     if (current?.id) {
       try {
         setVisible(false);
@@ -115,7 +112,6 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         title: "名称",
         dataIndex: "name",
         width: 80,
-
         copyable: true,
         ellipsis: true,
         sorter: true,
@@ -131,14 +127,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         ellipsis: true,
         sorter: true,
       },
-
       {
         key: "enable",
         title: "应用状态",
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-
         width: 120,
         filters: [
           { text: "运行", value: true },
@@ -158,51 +152,46 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         align: "right",
         fixed: "right",
         width: 120,
-
         ellipsis: true,
         sorter: true,
-
         render: (webhook: WebhookFragment): ReactElement => (
           <span>
-            <>
-              <Divider type="vertical" />
-              <Button
-                type="link"
-                onClick={() => {
-                  copy(`${SERVER_URL}-${webhook.token}`);
-                  message.info("已复制 Webhook 地址到剪切板");
-                }}
-              >
-                复制 Webhook
+            <Divider type="vertical" />
+            <Button
+              type="link"
+              onClick={() => {
+                // eslint-disable-next-line no-undef
+                copy(`${SERVER_URL}-${webhook.token}`);
+                message.info("已复制 Webhook 地址到剪切板");
+              }}
+            >
+              复制 Webhook
+            </Button>
+
+            <Divider type="vertical" />
+            <Divider type="vertical" />
+            <Button
+              style={{ padding: 0, border: 0 }}
+              type="link"
+              onClick={(): void => {
+                setCurrent(webhook);
+                setVisible(true);
+              }}
+            >
+              编辑
+            </Button>
+
+            <Divider type="vertical" />
+            <Popconfirm
+              cancelText="取消"
+              okText="确定"
+              title={`删除 ${webhook.name} 任务？`}
+              onConfirm={(): Promise<void> => handleDeleteClick(webhook)}
+            >
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                删除
               </Button>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Divider type="vertical" />
-              <Button
-                style={{ padding: 0, border: 0 }}
-                type="link"
-                onClick={(): void => {
-                  setCurrent(webhook);
-                  setVisible(true);
-                }}
-              >
-                编辑
-              </Button>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Popconfirm
-                cancelText="取消"
-                okText="确定"
-                title={`删除 ${webhook.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(webhook)}
-              >
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  删除
-                </Button>
-              </Popconfirm>
-            </>
+            </Popconfirm>
           </span>
         ),
       },
@@ -221,7 +210,6 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         id="webhook"
         loading={loading || deleteLoading || upDataLoading || createLoading}
         name="webhook"
-        queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Button
@@ -233,6 +221,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             创建 Webhook
           </Button>,
         ]}
+        variables={variables}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
@@ -246,6 +235,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
               return {
                 task: {
+                  id: fetchMoreResult.task.id,
                   webhooks: {
                     __typename: previousResult.task.webhooks.__typename,
                     totalCount: fetchMoreResult.task.webhooks.totalCount,
@@ -260,26 +250,17 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             },
           });
         }}
-        onQueryParamsChange={setQueryParams}
-        onRefresh={(): void => {
-          refetch();
-        }}
+        onRefresh={() => refetch()}
+        onVariablesChange={() => setVariables}
       />
-
       <EditWebhook
         current={current}
         visible={visible}
-        onCancel={handleOnCancel}
-        onOk={handleOnOk}
+        onCancel={handleCancel}
+        onOk={handleOk}
       />
     </Card>
   );
 };
 
-export default (props: WebhookProps) => {
-  return (
-    <WebhookProvider>
-      <Webhook {...props} />
-    </WebhookProvider>
-  );
-};
+export default Webhook;

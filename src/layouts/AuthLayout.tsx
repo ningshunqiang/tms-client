@@ -17,7 +17,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         <div className={styles.top}>
           <div className={styles.header}>
             <Link to="/">
-              <span className={styles.title}>Tms</span>
+              <span className={styles.title}>TMS</span>
             </Link>
           </div>
           <div className={styles.desc}>任务管理系统</div>

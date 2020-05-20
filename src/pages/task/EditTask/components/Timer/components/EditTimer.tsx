@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { Form, Input, Modal, Switch } from "antd";
 import React, { FC, useEffect } from "react";
 
@@ -11,13 +10,10 @@ interface EditTimerModalProps {
   onCancel: () => void;
 }
 
-const formLayout = {
-  labelCol: { span: 7 },
-  wrapperCol: { span: 13 },
-};
 const EditTimer: FC<EditTimerModalProps> = (props) => {
   const { visible, onOk, onCancel, current } = props;
   const [form] = Form.useForm();
+
   useEffect(() => {
     if (form && !visible) {
       form.resetFields();
@@ -29,32 +25,36 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
       });
     }
   }, [visible, current, form]);
+
   const handleSubmit = () => {
     if (!form) return;
     form.submit();
   };
+
   const handleFinish = (values: TimerFragment) => {
     if (onOk) {
       onOk(values);
     }
   };
-  const modalFooter = {
-    okText: "保存",
-    onOk: handleSubmit,
-    cancelText: "取消",
-    onCancel,
-  };
 
   return (
     <div>
       <Modal
+        cancelText="取消"
         forceRender
+        okText="保存"
         title="编辑定时器"
         visible={visible}
-        {...modalFooter}
         width={600}
+        onCancel={onCancel}
+        onOk={handleSubmit}
       >
-        <Form {...formLayout} form={form} onFinish={handleFinish}>
+        <Form
+          form={form}
+          labelCol={{ span: 7 }}
+          wrapperCol={{ span: 13 }}
+          onFinish={handleFinish}
+        >
           <Form.Item
             initialValue={false}
             label="应用状态"

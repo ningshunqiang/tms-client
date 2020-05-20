@@ -3,7 +3,6 @@ import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
 import React, { ReactElement, SFC, useState } from "react";
 
-import { TaskProvider } from "@/contexts/task/MyTaskContext";
 import useCreateTask from "@/hooks/useCreateTaskMutation";
 
 const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
@@ -12,11 +11,13 @@ interface CreateTask {
   code: string;
   name: string;
 }
+
 const CreateTask: SFC = (): ReactElement => {
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
   const [handleCreateTask, { loading }] = useCreateTask();
+
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
       enable,
@@ -56,7 +57,6 @@ const CreateTask: SFC = (): ReactElement => {
               </Form.Item>
             </Col>
           </Row>
-
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item label="代码">
@@ -91,8 +91,4 @@ const CreateTask: SFC = (): ReactElement => {
     </PageHeaderWrapper>
   );
 };
-export default (): ReactElement => (
-  <TaskProvider>
-    <CreateTask />
-  </TaskProvider>
-);
+export default CreateTask;

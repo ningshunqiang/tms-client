@@ -14,24 +14,25 @@ import {
   SimpleColumnType,
   ValueType,
 } from "@/components/SimpleTable";
-import { TaskProvider, useTask } from "@/contexts/task/MyTaskContext";
 import {
   TaskFragment,
   TasksQuery,
   useDeleteTaskMutation,
   useTasksQuery,
 } from "@/generated/graphql";
+import useTasksQueryVariablesState from "@/hooks/variablesStates/useTasksQueryVariablesState";
 
 const MyTask: SFC = (): ReactElement => {
-  const { queryParams, setQueryParams } = useTask();
+  const [variables, setVariables] = useTasksQueryVariablesState();
   const [
     handleDeleteTask,
     { loading: deleteLoading },
   ] = useDeleteTaskMutation();
 
   const { data, loading, refetch, fetchMore } = useTasksQuery({
-    variables: queryParams,
+    variables,
   });
+
   const handleDeleteClick = useCallback(
     async ({ id }): Promise<void> => {
       try {
@@ -52,7 +53,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "名称",
         dataIndex: "name",
         width: 80,
-
         copyable: true,
         ellipsis: true,
         sorter: true,
@@ -60,7 +60,6 @@ const MyTask: SFC = (): ReactElement => {
       },
       {
         width: 120,
-
         key: "id",
         title: "id",
         dataIndex: "id",
@@ -74,12 +73,10 @@ const MyTask: SFC = (): ReactElement => {
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-
         width: 120,
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ] as any,
         render: (value, row: TaskFragment): ReactNode =>
           row.enable ? (
@@ -93,7 +90,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "创建时间",
         dataIndex: "createdAt",
         width: 120,
-
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,
@@ -103,7 +99,6 @@ const MyTask: SFC = (): ReactElement => {
         title: "更新时间",
         dataIndex: "updatedAt",
         width: 120,
-
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,
@@ -114,33 +109,28 @@ const MyTask: SFC = (): ReactElement => {
         align: "right",
         fixed: "right",
         width: 120,
-
         ellipsis: true,
         sorter: true,
-
         render: (task: TaskFragment): ReactElement => (
           <span>
-            <>
-              <Divider type="vertical" />
-              <Link to={`tasks/${task.id}/edit`}>
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  编辑
-                </Button>
-              </Link>
-            </>
-            <>
-              <Divider type="vertical" />
-              <Popconfirm
-                cancelText="取消"
-                okText="确定"
-                title={`删除 ${task.name} 任务？`}
-                onConfirm={(): Promise<void> => handleDeleteClick(task)}
-              >
-                <Button style={{ padding: 0, border: 0 }} type="link">
-                  删除
-                </Button>
-              </Popconfirm>
-            </>
+            <Divider type="vertical" />
+            <Link to={`tasks/${task.id}/edit`}>
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                编辑
+              </Button>
+            </Link>
+
+            <Divider type="vertical" />
+            <Popconfirm
+              cancelText="取消"
+              okText="确定"
+              title={`删除 ${task.name} 任务？`}
+              onConfirm={(): Promise<void> => handleDeleteClick(task)}
+            >
+              <Button style={{ padding: 0, border: 0 }} type="link">
+                删除
+              </Button>
+            </Popconfirm>
           </span>
         ),
       },
@@ -157,13 +147,13 @@ const MyTask: SFC = (): ReactElement => {
         id="Tms"
         loading={loading || deleteLoading}
         name="任务管理"
-        queryParams={queryParams}
         rowKey="id"
         toolBarRender={(): ReactNode[] => [
           <Link to="tasks/create">
             <Button type="primary">创建任务</Button>
           </Link>,
         ]}
+        variables={variables}
         onLoadMore={(): void => {
           fetchMore({
             variables: {
@@ -185,17 +175,11 @@ const MyTask: SFC = (): ReactElement => {
             },
           });
         }}
-        onQueryParamsChange={setQueryParams}
-        onRefresh={(): void => {
-          refetch();
-        }}
+        onRefresh={() => refetch()}
+        onVariablesChange={setVariables}
       />
     </Card>
   );
 };
 
-export default (): ReactElement => (
-  <TaskProvider>
-    <MyTask />
-  </TaskProvider>
-);
+export default MyTask;
