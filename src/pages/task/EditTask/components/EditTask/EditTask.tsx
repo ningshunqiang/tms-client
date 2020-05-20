@@ -1,12 +1,21 @@
 import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
-import React, { ReactElement, SFC, useEffect, useState } from "react";
+import React, {
+  ReactElement,
+  SFC,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   TaskFragment,
+  useTaskHistoryQuery,
   useTaskQuery,
   useUpdatedTaskMutation,
 } from "@/generated/graphql";
+
+import History from "./history";
 
 const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
 
@@ -23,10 +32,19 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const { data } = useTaskQuery({
     variables: { id },
   });
-  const [handleUpDataTask, { loading }] = useUpdatedTaskMutation();
+
+  const [upDataTask, { loading }] = useUpdatedTaskMutation();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
+  const [historyVisible, setHistoryVisible] = useState(false);
+  const [historyID, setHistoryID] = useState("0");
+
+  const { data: historyData } = useTaskHistoryQuery({
+    variables: {
+      id: historyID,
+    },
+  });
 
   useEffect(() => {
     if (data) {
@@ -36,6 +54,13 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (historyData) {
+      setCode(historyData.taskHistory.code);
+      setName(historyData.taskHistory.name);
+    }
+  }, [historyData, historyID]);
+
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
       enable,
@@ -43,7 +68,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       name,
     };
     try {
-      await handleUpDataTask({
+      await upDataTask({
         variables: { id, input: task },
       });
       message.success("更新任务成功。");
@@ -52,8 +77,23 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     }
   };
 
+  const handleHistoryID = useCallback((historyId: string) => {
+    setHistoryID(historyId);
+  }, []);
+
   return (
     <Card>
+      <Row>
+        <Col offset={21} span={3}>
+          <Button
+            size="small"
+            type="primary"
+            onClick={() => setHistoryVisible(true)}
+          >
+            历史记录
+          </Button>
+        </Col>
+      </Row>
       <Form hideRequiredMark layout="vertical">
         <Row gutter={16}>
           <Col span={24}>
@@ -103,6 +143,12 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
           保存
         </Button>
       </div>
+      <History
+        taskId={id}
+        visible={historyVisible}
+        onClose={() => setHistoryVisible(false)}
+        onHistoryID={handleHistoryID}
+      />
     </Card>
   );
 };

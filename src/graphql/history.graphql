@@ -1,0 +1,37 @@
+fragment TaskHistory on TaskHistory {
+  id
+  name
+  createdAt
+  updatedAt
+}
+
+query TaskHistory($id: ID!) {
+  taskHistory(id: $id) {
+    ...TaskHistory
+  }
+}
+
+query TaskHistorys(
+  $taskId: ID!
+  $after: String
+  $query: String
+  $orderBy: [Ordering]
+) {
+  task(id: $taskId) {
+    id
+    histories(first: 20, after: $after, query: $query, orderBy: $orderBy) {
+      edges {
+        node {
+          ...TaskHistory
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}

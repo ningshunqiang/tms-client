@@ -551,6 +551,45 @@ export type RefreshTokenMutation = { __typename?: "Mutation" } & {
   refreshToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token">;
 };
 
+export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
+  TaskHistory,
+  "id" | "name" | "code" | "createdAt" | "updatedAt"
+>;
+
+export type TaskHistoryQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type TaskHistoryQuery = { __typename?: "Query" } & {
+  taskHistory: { __typename?: "TaskHistory" } & TaskHistoryFragment;
+};
+
+export type TaskHistorysQueryVariables = {
+  taskId: Scalars["ID"];
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistorysQuery = { __typename?: "Query" } & {
+  task: { __typename?: "Task" } & Pick<Task, "id"> & {
+      histories: { __typename?: "TaskHistoryConnection" } & Pick<
+        TaskHistoryConnection,
+        "totalCount"
+      > & {
+          edges: Array<
+            { __typename?: "TaskHistoryEdge" } & {
+              node: { __typename?: "TaskHistory" } & TaskHistoryFragment;
+            }
+          >;
+          pageInfo: { __typename?: "PageInfo" } & Pick<
+            PageInfo,
+            "hasNextPage" | "hasPreviousPage" | "startCursor" | "endCursor"
+          >;
+        };
+    };
+};
+
 export type StorageFragment = { __typename?: "Storage" } & Pick<
   Storage,
   "id" | "name" | "enable" | "key" | "ownerId" | "updatedAt" | "createdAt"
@@ -808,6 +847,15 @@ export const UserFragmentDoc = gql`
     email
   }
 `;
+export const TaskHistoryFragmentDoc = gql`
+  fragment TaskHistory on TaskHistory {
+    id
+    name
+    code
+    createdAt
+    updatedAt
+  }
+`;
 export const StorageFragmentDoc = gql`
   fragment Storage on Storage {
     id
@@ -1006,6 +1054,140 @@ export type RefreshTokenMutationResult = ApolloReactCommon.MutationResult<
 export type RefreshTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
   RefreshTokenMutation,
   RefreshTokenMutationVariables
+>;
+export const TaskHistoryDocument = gql`
+  query TaskHistory($id: ID!) {
+    taskHistory(id: $id) {
+      ...TaskHistory
+    }
+  }
+  ${TaskHistoryFragmentDoc}
+`;
+
+/**
+ * __useTaskHistoryQuery__
+ *
+ * To run a query within a React component, call `useTaskHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskHistoryQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTaskHistoryQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskHistoryQuery, TaskHistoryQueryVariables>(
+    TaskHistoryDocument,
+    baseOptions
+  );
+}
+export function useTaskHistoryLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >(TaskHistoryDocument, baseOptions);
+}
+export type TaskHistoryQueryHookResult = ReturnType<typeof useTaskHistoryQuery>;
+export type TaskHistoryLazyQueryHookResult = ReturnType<
+  typeof useTaskHistoryLazyQuery
+>;
+export type TaskHistoryQueryResult = ApolloReactCommon.QueryResult<
+  TaskHistoryQuery,
+  TaskHistoryQueryVariables
+>;
+export const TaskHistorysDocument = gql`
+  query TaskHistorys(
+    $taskId: ID!
+    $after: String
+    $query: String
+    $orderBy: [Ordering]
+  ) {
+    task(id: $taskId) {
+      id
+      histories(first: 20, after: $after, query: $query, orderBy: $orderBy) {
+        edges {
+          node {
+            ...TaskHistory
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        totalCount
+      }
+    }
+  }
+  ${TaskHistoryFragmentDoc}
+`;
+
+/**
+ * __useTaskHistorysQuery__
+ *
+ * To run a query within a React component, call `useTaskHistorysQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskHistorysQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskHistorysQuery({
+ *   variables: {
+ *      taskId: // value for 'taskId'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useTaskHistorysQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskHistorysQuery,
+    TaskHistorysQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<
+    TaskHistorysQuery,
+    TaskHistorysQueryVariables
+  >(TaskHistorysDocument, baseOptions);
+}
+export function useTaskHistorysLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskHistorysQuery,
+    TaskHistorysQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<
+    TaskHistorysQuery,
+    TaskHistorysQueryVariables
+  >(TaskHistorysDocument, baseOptions);
+}
+export type TaskHistorysQueryHookResult = ReturnType<
+  typeof useTaskHistorysQuery
+>;
+export type TaskHistorysLazyQueryHookResult = ReturnType<
+  typeof useTaskHistorysLazyQuery
+>;
+export type TaskHistorysQueryResult = ApolloReactCommon.QueryResult<
+  TaskHistorysQuery,
+  TaskHistorysQueryVariables
 >;
 export const StorageDocument = gql`
   query Storage($id: ID!) {
