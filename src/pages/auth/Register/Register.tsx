@@ -25,7 +25,7 @@ const StyledCard = styled(Card)`
   width: 400px;
 `;
 
-const GoRegister = styled.div`
+const LoginButton = styled.div`
   float: right;
 
   margin-top: 20px;
@@ -148,9 +148,9 @@ const Register: SFC = () => {
         </Form>
       </StyledCard>
 
-      <GoRegister>
+      <LoginButton>
         <Link to="/auth/login">返回登陆</Link>
-      </GoRegister>
+      </LoginButton>
     </div>
   );
 };

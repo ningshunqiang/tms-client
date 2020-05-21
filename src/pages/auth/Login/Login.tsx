@@ -11,7 +11,7 @@ const { useForm } = Form;
 const StyledCard = styled(Card)`
   width: 400px;
 `;
-const GoRegister = styled.div`
+const RegisterButton = styled.div`
   float: right;
 
   margin-top: 20px;
@@ -83,9 +83,9 @@ const Login: SFC = () => {
           </Button>
         </Form>
       </StyledCard>
-      <GoRegister>
+      <RegisterButton>
         <Link to="/auth/register">注册账户</Link>
-      </GoRegister>
+      </RegisterButton>
     </div>
   );
 };
