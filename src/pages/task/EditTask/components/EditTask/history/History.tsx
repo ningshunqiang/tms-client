@@ -8,7 +8,7 @@ import { useTaskHistorysQuery } from "@/generated/graphql";
 interface HistoryProps {
   visible: boolean;
   taskId: string;
-  onHistoryID: (id: string) => void;
+  onHistoryId: (id: string) => void;
   onClose: () => void;
 }
 
@@ -32,7 +32,7 @@ const HistoryTime = styled.div`
   color: #ad9f9f;
 `;
 
-function TaskHistory({ visible, onClose, onHistoryID, taskId }: HistoryProps) {
+function TaskHistory({ visible, onClose, onHistoryId, taskId }: HistoryProps) {
   const { data, loading } = useTaskHistorysQuery({
     variables: {
       taskId,
@@ -55,7 +55,7 @@ function TaskHistory({ visible, onClose, onHistoryID, taskId }: HistoryProps) {
         renderItem={(item) => {
           return (
             <List.Item style={{ padding: "0px" }}>
-              <HistoryList onClick={() => onHistoryID(item.node.id)}>
+              <HistoryList onClick={() => onHistoryId(item.node.id)}>
                 <HistoryName> {item.node.name}</HistoryName>
                 <HistoryTime>
                   {moment(item.node.createdAt)

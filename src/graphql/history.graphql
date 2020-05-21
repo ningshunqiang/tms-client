@@ -8,6 +8,7 @@ fragment TaskHistory on TaskHistory {
 query TaskHistory($id: ID!) {
   taskHistory(id: $id) {
     ...TaskHistory
+    code
   }
 }
 

@@ -553,7 +553,7 @@ export type RefreshTokenMutation = { __typename?: "Mutation" } & {
 
 export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
   TaskHistory,
-  "id" | "name" | "code" | "createdAt" | "updatedAt"
+  "id" | "name" | "createdAt" | "updatedAt"
 >;
 
 export type TaskHistoryQueryVariables = {
@@ -561,7 +561,8 @@ export type TaskHistoryQueryVariables = {
 };
 
 export type TaskHistoryQuery = { __typename?: "Query" } & {
-  taskHistory: { __typename?: "TaskHistory" } & TaskHistoryFragment;
+  taskHistory: { __typename?: "TaskHistory" } & Pick<TaskHistory, "code"> &
+    TaskHistoryFragment;
 };
 
 export type TaskHistorysQueryVariables = {
@@ -703,12 +704,12 @@ export type CreateTaskMutation = { __typename?: "Mutation" } & {
   createTask: { __typename?: "Task" } & TaskFragment;
 };
 
-export type UpdatedTaskMutationVariables = {
+export type UpdateTaskMutationVariables = {
   id: Scalars["ID"];
   input: UpdateTaskInput;
 };
 
-export type UpdatedTaskMutation = { __typename?: "Mutation" } & {
+export type UpdateTaskMutation = { __typename?: "Mutation" } & {
   updateTask: { __typename?: "Task" } & TaskFragment;
 };
 
@@ -851,7 +852,6 @@ export const TaskHistoryFragmentDoc = gql`
   fragment TaskHistory on TaskHistory {
     id
     name
-    code
     createdAt
     updatedAt
   }
@@ -1059,6 +1059,7 @@ export const TaskHistoryDocument = gql`
   query TaskHistory($id: ID!) {
     taskHistory(id: $id) {
       ...TaskHistory
+      code
     }
   }
   ${TaskHistoryFragmentDoc}
@@ -1678,57 +1679,57 @@ export type CreateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
   CreateTaskMutation,
   CreateTaskMutationVariables
 >;
-export const UpdatedTaskDocument = gql`
-  mutation UpdatedTask($id: ID!, $input: UpdateTaskInput!) {
+export const UpdateTaskDocument = gql`
+  mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) {
     updateTask(id: $id, input: $input) {
       ...Task
     }
   }
   ${TaskFragmentDoc}
 `;
-export type UpdatedTaskMutationFn = ApolloReactCommon.MutationFunction<
-  UpdatedTaskMutation,
-  UpdatedTaskMutationVariables
+export type UpdateTaskMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateTaskMutation,
+  UpdateTaskMutationVariables
 >;
 
 /**
- * __useUpdatedTaskMutation__
+ * __useUpdateTaskMutation__
  *
- * To run a mutation, you first call `useUpdatedTaskMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdatedTaskMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTaskMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updatedTaskMutation, { data, loading, error }] = useUpdatedTaskMutation({
+ * const [updateTaskMutation, { data, loading, error }] = useUpdateTaskMutation({
  *   variables: {
  *      id: // value for 'id'
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdatedTaskMutation(
+export function useUpdateTaskMutation(
   baseOptions?: ApolloReactHooks.MutationHookOptions<
-    UpdatedTaskMutation,
-    UpdatedTaskMutationVariables
+    UpdateTaskMutation,
+    UpdateTaskMutationVariables
   >
 ) {
   return ApolloReactHooks.useMutation<
-    UpdatedTaskMutation,
-    UpdatedTaskMutationVariables
-  >(UpdatedTaskDocument, baseOptions);
+    UpdateTaskMutation,
+    UpdateTaskMutationVariables
+  >(UpdateTaskDocument, baseOptions);
 }
-export type UpdatedTaskMutationHookResult = ReturnType<
-  typeof useUpdatedTaskMutation
+export type UpdateTaskMutationHookResult = ReturnType<
+  typeof useUpdateTaskMutation
 >;
-export type UpdatedTaskMutationResult = ApolloReactCommon.MutationResult<
-  UpdatedTaskMutation
+export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<
+  UpdateTaskMutation
 >;
-export type UpdatedTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
-  UpdatedTaskMutation,
-  UpdatedTaskMutationVariables
+export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateTaskMutation,
+  UpdateTaskMutationVariables
 >;
 export const TimerDocument = gql`
   query Timer($id: ID!) {
