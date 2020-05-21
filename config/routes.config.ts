@@ -14,6 +14,11 @@ export default [
             path: "/auth/login",
             component: "./auth/Login",
           },
+          {
+            name: "注册",
+            path: "/auth/register",
+            component: "./auth/Register",
+          },
         ],
       },
       {

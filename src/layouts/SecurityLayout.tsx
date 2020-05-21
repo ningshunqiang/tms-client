@@ -1,5 +1,4 @@
 import { PageLoading } from "@ant-design/pro-layout";
-import { stringify } from "querystring";
 import React, { ReactElement, SFC, useEffect } from "react";
 import { Redirect } from "umi";
 
@@ -15,16 +14,12 @@ const SecurityLayout: SFC = ({ children }): ReactElement => {
     setInterval((): void => refreshToken(), 3600000);
   }, [refreshToken]);
 
-  const queryString = stringify({
-    redirect: window.location.href,
-  });
-
   if (!user && loading) {
     return <PageLoading />;
   }
 
   if (!user) {
-    return <Redirect to={`/auth/login?${queryString}`} />;
+    return <Redirect to="/auth/login" />;
   }
 
   return <>{children}</>;
