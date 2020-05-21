@@ -10,12 +10,12 @@ import React, { SFC } from "react";
 import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 
-import { useCreateUserMutation } from "@/generated/graphql";
+import {
+  CreateUserInput as BaseCreateUserInput,
+  useCreateUserMutation,
+} from "@/generated/graphql";
 
-interface UserFragment {
-  name: string;
-  email: string;
-  password: string;
+interface CreateUserInput extends BaseCreateUserInput {
   confirmPassword: string;
 }
 
@@ -38,20 +38,19 @@ const Register: SFC = () => {
   const history = useHistory();
   const [createUser, { loading }] = useCreateUserMutation();
 
-  async function handleFinish(variables: UserFragment) {
+  async function handleFinish(variables: CreateUserInput) {
     if (variables.password.length < 6)
       return message.warning("密码长度不得小于 6 位数");
     try {
       await createUser({
         variables: { input: _.omit(variables, ["confirmPassword"]) },
       });
-      message.success("创建用户成功,去登陆吧！", [1], () => {
-        return history.push("/auth/login");
-      });
+
+      await message.success("创建用户成功,去登陆吧！");
+      return history.push("/auth/login");
     } catch {
       return message.error("创建用户失败！");
     }
-    return true;
   }
 
   return (
