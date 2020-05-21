@@ -31,7 +31,7 @@ interface WebhookProps {
 const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   const [
     updateWebhook,
-    { loading: upDateLoading },
+    { loading: updateLoading },
   ] = useUpdatedWebhookMutation();
   const [
     createWebhook,
@@ -43,6 +43,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   const { variables, setVariables } = useWebhooksQueryVariablesState();
 
   const { data, loading, refetch, fetchMore } = useWebhooksQuery({
+    notifyOnNetworkStatusChange: true,
     variables: {
       taskId: id,
       ...variables,
@@ -72,38 +73,41 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     setVisible(false);
   }, []);
 
-  const handleOk = async (value: WebhookFragment) => {
-    if (current?.id) {
-      try {
-        setVisible(false);
+  const handleOk = useCallback(
+    async (value: WebhookFragment) => {
+      if (current?.id) {
+        try {
+          setVisible(false);
 
-        await updateWebhook({
-          variables: { id: current.id, input: value },
-        });
-        setCurrent(null);
-        message.success("更新成功");
-      } catch {
-        message.error("更新失败");
-      }
-    } else {
-      try {
-        setVisible(false);
-        await createWebhook({
-          variables: {
-            input: {
-              ...value,
-              taskId: id,
+          await updateWebhook({
+            variables: { id: current.id, input: value },
+          });
+          setCurrent(null);
+          message.success("更新成功");
+        } catch {
+          message.error("更新失败");
+        }
+      } else {
+        try {
+          setVisible(false);
+          await createWebhook({
+            variables: {
+              input: {
+                ...value,
+                taskId: id,
+              },
             },
-          },
-        });
-        setCurrent(null);
-        refetch();
-        message.success("创建成功");
-      } catch {
-        message.error("创建失败");
+          });
+          setCurrent(null);
+          refetch();
+          message.success("创建成功");
+        } catch {
+          message.error("创建失败");
+        }
       }
-    }
-  };
+    },
+    [createWebhook, current, id, refetch, updateWebhook]
+  );
 
   const columns = useMemo(
     (): SimpleColumnType<WebhookFragment>[] => [
@@ -203,7 +207,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         )}
         hasMore={data?.task.webhooks.pageInfo.hasNextPage}
         id="webhook"
-        loading={loading || deleteLoading || upDateLoading || createLoading}
+        loading={loading || deleteLoading || updateLoading || createLoading}
         name="webhook"
         rowKey="id"
         toolBarRender={(): ReactNode[] => [

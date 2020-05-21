@@ -27,6 +27,7 @@ const MyTask: SFC = (): ReactElement => {
   const [deleteTask, { loading: deleteLoading }] = useDeleteTaskMutation();
 
   const { data, loading, refetch, fetchMore } = useTasksQuery({
+    notifyOnNetworkStatusChange: true,
     variables,
   });
 

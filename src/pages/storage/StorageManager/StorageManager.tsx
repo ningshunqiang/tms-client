@@ -26,7 +26,7 @@ const Storage: SFC = (): ReactElement => {
   const [variables, setVariables] = useStoragesQueryVariablesState();
   const [
     updateStorage,
-    { loading: upDateLoading },
+    { loading: updateLoading },
   ] = useUpdateStorageMutation();
 
   const [
@@ -38,6 +38,7 @@ const Storage: SFC = (): ReactElement => {
   const [current, setCurrent] = useState<StorageFragment>();
 
   const { data, loading, refetch, fetchMore } = useStoragesQuery({
+    notifyOnNetworkStatusChange: true,
     variables,
   });
 
@@ -195,7 +196,7 @@ const Storage: SFC = (): ReactElement => {
         )}
         hasMore={data?.storages.pageInfo.hasNextPage}
         id="Storage"
-        loading={loading || deleteLoading || upDateLoading || createLoading}
+        loading={loading || deleteLoading || updateLoading || createLoading}
         name="Storage"
         rowKey="id"
         toolBarRender={(): ReactNode[] => [

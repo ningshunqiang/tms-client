@@ -29,11 +29,12 @@ interface TimerProps {
 
 const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
   const [variables, setVariables] = useTimersQueryVariablesState();
-  const [updateTimer, { loading: upDateLoading }] = useUpdatedTimerMutation();
+  const [updateTimer, { loading: updateLoading }] = useUpdatedTimerMutation();
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<TimerFragment>();
   const [createTimer, { loading: createLoading }] = useCreateTimerMutation();
   const { data, loading, refetch, fetchMore } = useTimersQuery({
+    notifyOnNetworkStatusChange: true,
     variables: {
       taskId: id,
       ...variables,
@@ -60,40 +61,43 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
     setVisible(false);
   }, []);
 
-  const handleOk = async (value: TimerFragment) => {
-    if (current?.id) {
-      try {
-        setVisible(false);
+  const handleOk = useCallback(
+    async (value: TimerFragment) => {
+      if (current?.id) {
+        try {
+          setVisible(false);
 
-        await updateTimer({
-          variables: { id: current.id, input: value },
-        });
-        setCurrent(null);
-        message.success("更新成功");
-      } catch {
-        message.error("更新失败");
-      }
-    } else {
-      try {
-        setVisible(false);
-        await createTimer({
-          variables: {
-            input: {
-              ...value,
-              taskId: id,
+          await updateTimer({
+            variables: { id: current.id, input: value },
+          });
+          setCurrent(null);
+          message.success("更新成功");
+        } catch {
+          message.error("更新失败");
+        }
+      } else {
+        try {
+          setVisible(false);
+          await createTimer({
+            variables: {
+              input: {
+                ...value,
+                taskId: id,
+              },
             },
-          },
-        });
-        setCurrent(null);
+          });
+          setCurrent(null);
 
-        refetch();
+          refetch();
 
-        message.success("创建成功");
-      } catch {
-        message.error("创建失败");
+          message.success("创建成功");
+        } catch {
+          message.error("创建失败");
+        }
       }
-    }
-  };
+    },
+    [createTimer, current, id, refetch, updateTimer]
+  );
 
   const columns = useMemo(
     (): SimpleColumnType<TimerFragment>[] => [
@@ -182,7 +186,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
           )}
           hasMore={data?.task.timers.pageInfo.hasNextPage}
           id="timer"
-          loading={loading || deleteLoading || upDateLoading || createLoading}
+          loading={loading || deleteLoading || updateLoading || createLoading}
           name="timer"
           rowKey="id"
           toolBarRender={(): ReactNode[] => [

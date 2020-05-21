@@ -23,7 +23,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const { data } = useTaskQuery({
     variables: { id },
   });
-  const [upDateTask, { loading }] = useUpdatedTaskMutation();
+  const [updateTask, { loading }] = useUpdatedTaskMutation();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
@@ -43,7 +43,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       name,
     };
     try {
-      await upDateTask({
+      await updateTask({
         variables: { id, input: task },
       });
       message.success("更新任务成功。");
