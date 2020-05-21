@@ -110,7 +110,7 @@ const MyTask: SFC = (): ReactElement => {
         sorter: true,
         render: (task: TaskFragment): ReactElement => (
           <span>
-            <Link to={`tasks/${task.id}/edit`}>
+            <Link to={`tasks/${task.id}/edit?tab=basic`}>
               <Button style={{ padding: 0, border: 0 }} type="link">
                 编辑
               </Button>
