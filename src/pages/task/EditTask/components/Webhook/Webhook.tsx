@@ -55,7 +55,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     { loading: deleteLoading },
   ] = useDeleteWebhookMutation();
 
-  const deleteClick = useCallback(
+  const handleDelete = useCallback(
     async (webhook): Promise<void> => {
       try {
         await deleteWebhook({ variables: { id: webhook.id } });
@@ -185,7 +185,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               cancelText="取消"
               okText="确定"
               title={`删除 ${webhook.name} 任务？`}
-              onConfirm={(): Promise<void> => deleteClick(webhook)}
+              onConfirm={(): Promise<void> => handleDelete(webhook)}
             >
               <Button style={{ padding: 0, border: 0 }} type="link">
                 删除
@@ -195,7 +195,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         ),
       },
     ],
-    [deleteClick]
+    [handleDelete]
   );
 
   return (
