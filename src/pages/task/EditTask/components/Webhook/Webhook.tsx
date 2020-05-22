@@ -161,7 +161,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               type="link"
               onClick={() => {
                 // eslint-disable-next-line no-undef
-                copy(`${SERVER_URL}-${webhook.token}`);
+                copy(`${SERVER_URL}/webhooks/${webhook.token}`);
                 message.info("已复制 Webhook 地址到剪切板");
               }}
             >
