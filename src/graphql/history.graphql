@@ -12,7 +12,7 @@ query TaskHistory($id: ID!) {
   }
 }
 
-query TaskHistorys(
+query TaskHistories(
   $taskId: ID!
   $after: String
   $query: String

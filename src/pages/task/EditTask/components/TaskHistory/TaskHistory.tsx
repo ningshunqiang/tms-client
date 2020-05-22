@@ -3,16 +3,16 @@ import moment from "moment";
 import React from "react";
 import styled from "styled-components";
 
-import { useTaskHistorysQuery } from "@/generated/graphql";
+import { useTaskHistoriesQuery } from "@/generated/graphql";
 
-interface HistoryProps {
+interface TaskHistoryProps {
   visible: boolean;
   taskId: string;
   onHistoryId: (id: string) => void;
   onClose: () => void;
 }
 
-const HistoryList = styled.div`
+const TaskHistoryList = styled.div`
   width: 222px;
   min-height: 50px;
   padding: 5px;
@@ -23,17 +23,22 @@ const HistoryList = styled.div`
   }
 `;
 
-const HistoryName = styled.div`
+const TaskHistoryName = styled.div`
   font-size: 17px;
   font-weight: 600;
 `;
 
-const HistoryTime = styled.div`
+const TaskHistoryTime = styled.div`
   color: #ad9f9f;
 `;
 
-function TaskHistory({ visible, onClose, onHistoryId, taskId }: HistoryProps) {
-  const { data, loading } = useTaskHistorysQuery({
+function TaskHistory({
+  visible,
+  onClose,
+  onHistoryId,
+  taskId,
+}: TaskHistoryProps) {
+  const { data, loading } = useTaskHistoriesQuery({
     variables: {
       taskId,
     },
@@ -55,14 +60,14 @@ function TaskHistory({ visible, onClose, onHistoryId, taskId }: HistoryProps) {
         renderItem={(item) => {
           return (
             <List.Item style={{ padding: "0px" }}>
-              <HistoryList onClick={() => onHistoryId(item.node.id)}>
-                <HistoryName> {item.node.name}</HistoryName>
-                <HistoryTime>
+              <TaskHistoryList onClick={() => onHistoryId(item.node.id)}>
+                <TaskHistoryName> {item.node.name}</TaskHistoryName>
+                <TaskHistoryTime>
                   {moment(item.node.createdAt)
                     .utcOffset(480)
                     .format("YYYY-MM-DD")}
-                </HistoryTime>
-              </HistoryList>
+                </TaskHistoryTime>
+              </TaskHistoryList>
             </List.Item>
           );
         }}

@@ -19,23 +19,17 @@ import React, {
 } from "react";
 
 import {
+  CreateTaskInput,
   TaskFragment,
   useTaskHistoryQuery,
   useTaskQuery,
   useUpdateTaskMutation,
 } from "@/generated/graphql";
 
-import History from "./history";
-
-const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
+import History from "../TaskHistory";
 
 interface CreateTaskProps {
   id: TaskFragment["id"];
-}
-interface CreateTask {
-  enable: boolean;
-  code: string;
-  name: string;
 }
 
 const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
@@ -46,7 +40,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const [updateTask, { loading }] = useUpdateTaskMutation();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
-  const [code, setCode] = useState(initCode);
+  const [code, setCode] = useState(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [historyId, setHistoryId] = useState("");
 
@@ -72,7 +66,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   }, [historyData, historyId]);
 
   const handleSave = useCallback(async (): Promise<void> => {
-    const task: CreateTask = {
+    const task: CreateTaskInput = {
       enable,
       code,
       name,

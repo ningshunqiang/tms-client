@@ -3,14 +3,10 @@ import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
 import React, { ReactElement, SFC, useState } from "react";
 
+import { CreateTaskInput } from "@/generated/graphql";
 import useCreateTask from "@/hooks/useCreateTaskMutation";
 
-const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
-interface CreateTask {
-  enable: boolean;
-  code: string;
-  name: string;
-}
+const initCode = `export default () => {\n  // 请编写代码\n    return null;\n}`;
 
 const CreateTask: SFC = (): ReactElement => {
   const [enable, setEnable] = useState(false);
@@ -19,7 +15,7 @@ const CreateTask: SFC = (): ReactElement => {
   const [handleCreateTask, { loading }] = useCreateTask();
 
   const handleSave = async (): Promise<void> => {
-    const task: CreateTask = {
+    const task: CreateTaskInput = {
       enable,
       code,
       name,
