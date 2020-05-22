@@ -1,5 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
-import { FilterType, GraphQLTable, SimpleColumnType } from "antd-graphql-table";
+import { GraphQLTable } from "antd-graphql-table";
+import { FilterType, SimpleColumnType } from "antd-simple-table";
 import React, {
   ReactElement,
   ReactNode,
