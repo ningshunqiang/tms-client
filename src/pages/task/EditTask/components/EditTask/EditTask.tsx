@@ -26,7 +26,7 @@ import {
   useUpdateTaskMutation,
 } from "@/generated/graphql";
 
-import History from "../TaskHistory";
+import TaskHistory from "../TaskHistory";
 
 interface CreateTaskProps {
   id: TaskFragment["id"];
@@ -148,7 +148,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
             保存
           </Button>
         </div>
-        <History
+        <TaskHistory
           taskId={id}
           visible={historyVisible}
           onClose={() => setHistoryVisible(false)}
