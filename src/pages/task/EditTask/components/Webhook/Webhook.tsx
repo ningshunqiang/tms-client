@@ -40,7 +40,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
   const [visible, setVisible] = useState(false);
   const [current, setCurrent] = useState<WebhookFragment>();
-  const { variables, setVariables } = useWebhooksQueryVariablesState();
+  const [variables, setVariables] = useWebhooksQueryVariablesState();
 
   const { data, loading, refetch, fetchMore } = useWebhooksQuery({
     notifyOnNetworkStatusChange: true,
@@ -250,7 +250,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
           });
         }}
         onRefresh={() => refetch()}
-        onVariablesChange={() => setVariables}
+        onVariablesChange={setVariables}
       />
       <EditWebhook
         current={current}
