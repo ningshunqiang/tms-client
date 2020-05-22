@@ -1,4 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
+import { GraphQLTable } from "antd-graphql-table";
+import { FilterType, SimpleColumnType } from "antd-simple-table";
 import copy from "copy-to-clipboard";
 import React, {
   ReactElement,
@@ -9,8 +11,6 @@ import React, {
   useState,
 } from "react";
 
-import { QueryTable } from "@/components/QueryTable/QueryTable";
-import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
 import {
   TaskFragment,
   useCreateWebhookMutation,
@@ -200,7 +200,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
 
   return (
     <Card>
-      <QueryTable<WebhookFragment>
+      <GraphQLTable<WebhookFragment>
         columns={columns}
         dataSource={data?.task.webhooks.edges.map(
           ({ node }): WebhookFragment => node

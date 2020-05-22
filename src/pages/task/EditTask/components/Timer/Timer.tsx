@@ -1,4 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
+import { GraphQLTable } from "antd-graphql-table";
+import { FilterType, SimpleColumnType } from "antd-simple-table";
 import React, {
   ReactElement,
   ReactNode,
@@ -8,8 +10,6 @@ import React, {
   useState,
 } from "react";
 
-import { QueryTable } from "@/components/QueryTable/QueryTable";
-import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
 import {
   TaskFragment,
   TimerFragment,
@@ -179,7 +179,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
   return (
     <div>
       <Card>
-        <QueryTable<TimerFragment>
+        <GraphQLTable<TimerFragment>
           columns={columns}
           dataSource={data?.task.timers.edges.map(
             ({ node }): TimerFragment => node
