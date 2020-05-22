@@ -30,11 +30,11 @@ interface WebhookProps {
 
 const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   const [
-    handleUpdateWebhook,
-    { loading: upDataLoading },
+    updateWebhook,
+    { loading: updateLoading },
   ] = useUpdatedWebhookMutation();
   const [
-    handleCreateWebhook,
+    createWebhook,
     { loading: createLoading },
   ] = useCreateWebhookMutation();
 
@@ -43,6 +43,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   const { variables, setVariables } = useWebhooksQueryVariablesState();
 
   const { data, loading, refetch, fetchMore } = useWebhooksQuery({
+    notifyOnNetworkStatusChange: true,
     variables: {
       taskId: id,
       ...variables,
@@ -50,21 +51,21 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
   });
 
   const [
-    handleDeleteWebhook,
+    deleteWebhook,
     { loading: deleteLoading },
   ] = useDeleteWebhookMutation();
 
-  const handleDeleteClick = useCallback(
+  const handleDelete = useCallback(
     async (webhook): Promise<void> => {
       try {
-        await handleDeleteWebhook({ variables: { id: webhook.id } });
+        await deleteWebhook({ variables: { id: webhook.id } });
         message.success("删除成功！");
         refetch();
       } catch {
         message.error("删除失败！");
       }
     },
-    [handleDeleteWebhook, refetch]
+    [deleteWebhook, refetch]
   );
 
   const handleCancel = useCallback(() => {
@@ -72,38 +73,41 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
     setVisible(false);
   }, []);
 
-  const handleOk = async (value: WebhookFragment) => {
-    if (current?.id) {
-      try {
-        setVisible(false);
+  const handleOk = useCallback(
+    async (value: WebhookFragment) => {
+      if (current?.id) {
+        try {
+          setVisible(false);
 
-        await handleUpdateWebhook({
-          variables: { id: current.id, input: value },
-        });
-        setCurrent(null);
-        message.success("更新成功");
-      } catch {
-        message.error("更新失败");
-      }
-    } else {
-      try {
-        setVisible(false);
-        await handleCreateWebhook({
-          variables: {
-            input: {
-              ...value,
-              taskId: id,
+          await updateWebhook({
+            variables: { id: current.id, input: value },
+          });
+          setCurrent(null);
+          message.success("更新成功");
+        } catch {
+          message.error("更新失败");
+        }
+      } else {
+        try {
+          setVisible(false);
+          await createWebhook({
+            variables: {
+              input: {
+                ...value,
+                taskId: id,
+              },
             },
-          },
-        });
-        setCurrent(null);
-        refetch();
-        message.success("创建成功");
-      } catch {
-        message.error("创建失败");
+          });
+          setCurrent(null);
+          refetch();
+          message.success("创建成功");
+        } catch {
+          message.error("创建失败");
+        }
       }
-    }
-  };
+    },
+    [createWebhook, current, id, refetch, updateWebhook]
+  );
 
   const columns = useMemo(
     (): SimpleColumnType<WebhookFragment>[] => [
@@ -137,8 +141,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ] as any,
+        ],
         render: (value, row: WebhookFragment): ReactNode =>
           row.enable ? (
             <Badge status="processing" text="运行" />
@@ -149,14 +152,12 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
       {
         key: "action",
         title: "操作",
-        align: "right",
         fixed: "right",
-        width: 120,
+        width: 90,
         ellipsis: true,
         sorter: true,
         render: (webhook: WebhookFragment): ReactElement => (
           <span>
-            <Divider type="vertical" />
             <Button
               type="link"
               onClick={() => {
@@ -167,8 +168,6 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
             >
               复制 Webhook
             </Button>
-
-            <Divider type="vertical" />
             <Divider type="vertical" />
             <Button
               style={{ padding: 0, border: 0 }}
@@ -186,7 +185,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               cancelText="取消"
               okText="确定"
               title={`删除 ${webhook.name} 任务？`}
-              onConfirm={(): Promise<void> => handleDeleteClick(webhook)}
+              onConfirm={(): Promise<void> => handleDelete(webhook)}
             >
               <Button style={{ padding: 0, border: 0 }} type="link">
                 删除
@@ -196,7 +195,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         ),
       },
     ],
-    [handleDeleteClick]
+    [handleDelete]
   );
 
   return (
@@ -208,7 +207,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
         )}
         hasMore={data?.task.webhooks.pageInfo.hasNextPage}
         id="webhook"
-        loading={loading || deleteLoading || upDataLoading || createLoading}
+        loading={loading || deleteLoading || updateLoading || createLoading}
         name="webhook"
         rowKey="id"
         toolBarRender={(): ReactNode[] => [

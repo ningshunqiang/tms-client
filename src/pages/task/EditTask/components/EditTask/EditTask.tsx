@@ -8,7 +8,7 @@ import {
   useUpdatedTaskMutation,
 } from "@/generated/graphql";
 
-const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
+const initCode = `export default () => {\n  // 请编写代码\n   return null;\n}`;
 
 interface CreateTaskProps {
   id: TaskFragment["id"];
@@ -23,7 +23,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const { data } = useTaskQuery({
     variables: { id },
   });
-  const [handleUpDataTask, { loading }] = useUpdatedTaskMutation();
+  const [updateTask, { loading }] = useUpdatedTaskMutation();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
@@ -43,12 +43,23 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       name,
     };
     try {
-      await handleUpDataTask({
+      await updateTask({
         variables: { id, input: task },
       });
       message.success("更新任务成功。");
     } catch (err) {
       message.error("更新任务失败。");
+    }
+  };
+
+  document.onkeydown = (event) => {
+    if (
+      window.location.search === "?tab=basic" &&
+      event.metaKey &&
+      event.which === 83
+    ) {
+      event.preventDefault();
+      handleSave();
     }
   };
 

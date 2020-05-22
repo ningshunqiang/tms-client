@@ -2,10 +2,11 @@ import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
 import React, { ReactElement, SFC, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import useCreateTask from "@/hooks/useCreateTaskMutation";
 
-const initCode = `export default()=>{\n  // 请编写代码\n  \n  return;\n}`;
+const initCode = `export default () => {\n  // 请编写代码\n   return null;\n}`;
 interface CreateTask {
   enable: boolean;
   code: string;
@@ -13,10 +14,11 @@ interface CreateTask {
 }
 
 const CreateTask: SFC = (): ReactElement => {
+  const history = useHistory();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState(initCode);
-  const [handleCreateTask, { loading }] = useCreateTask();
+  const [createTask, { loading }] = useCreateTask();
 
   const handleSave = async (): Promise<void> => {
     const task: CreateTask = {
@@ -25,13 +27,22 @@ const CreateTask: SFC = (): ReactElement => {
       name,
     };
     try {
-      await handleCreateTask({ variables: { input: task } });
+      const newTask = await createTask({ variables: { input: task } });
       message.success("添加任务成功。");
       setCode(initCode);
       setEnable(false);
       setName("");
+
+      history.push(`/tasks/${newTask.data.createTask.id}/edit?tab=basic`);
     } catch (err) {
       message.error("添加任务失败。");
+    }
+  };
+
+  document.onkeydown = (event) => {
+    if (event.metaKey && event.which === 83) {
+      event.preventDefault();
+      handleSave();
     }
   };
 
