@@ -1,6 +1,13 @@
 import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
-import React, { ReactElement, SFC, useEffect, useState } from "react";
+import keyboardJS from "keyboardjs";
+import React, {
+  ReactElement,
+  SFC,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   TaskFragment,
@@ -36,7 +43,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     }
   }, [data]);
 
-  const handleSave = async (): Promise<void> => {
+  const handleSave = useCallback(async (): Promise<void> => {
     const task: CreateTask = {
       enable,
       code,
@@ -50,18 +57,17 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     } catch (err) {
       message.error("更新任务失败。");
     }
-  };
+  }, [code, enable, id, name, updateTask]);
 
-  document.onkeydown = (event) => {
-    if (
-      window.location.search === "?tab=basic" &&
-      event.metaKey &&
-      event.which === 83
-    ) {
-      event.preventDefault();
-      handleSave();
-    }
-  };
+  useEffect(() => {
+    keyboardJS.bind("command+s", (e) => {
+      e.preventDefault();
+      if (window.location.search === "?tab=basic") {
+        handleSave();
+      }
+    });
+    return () => keyboardJS.unbind("command+s");
+  }, [handleSave]);
 
   return (
     <Card>

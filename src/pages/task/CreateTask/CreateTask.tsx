@@ -1,7 +1,14 @@
 import { PageHeaderWrapper } from "@ant-design/pro-layout";
 import { ControlledEditor } from "@monaco-editor/react";
 import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
-import React, { ReactElement, SFC, useState } from "react";
+import keyboardJS from "keyboardjs";
+import React, {
+  ReactElement,
+  SFC,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { useHistory } from "react-router-dom";
 
 import useCreateTask from "@/hooks/useCreateTaskMutation";
@@ -20,7 +27,7 @@ const CreateTask: SFC = (): ReactElement => {
   const [code, setCode] = useState(initCode);
   const [createTask, { loading }] = useCreateTask();
 
-  const handleSave = async (): Promise<void> => {
+  const handleSave = useCallback(async (): Promise<void> => {
     const task: CreateTask = {
       enable,
       code,
@@ -37,14 +44,15 @@ const CreateTask: SFC = (): ReactElement => {
     } catch (err) {
       message.error("添加任务失败。");
     }
-  };
+  }, [code, createTask, enable, history, name]);
 
-  document.onkeydown = (event) => {
-    if (event.metaKey && event.which === 83) {
-      event.preventDefault();
+  useEffect(() => {
+    keyboardJS.bind("command+s", (e) => {
+      e.preventDefault();
       handleSave();
-    }
-  };
+    });
+    return () => keyboardJS.unbind("command+s");
+  }, [handleSave]);
 
   return (
     <PageHeaderWrapper title={false}>
