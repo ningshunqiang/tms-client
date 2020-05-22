@@ -85,6 +85,17 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     setHistoryId(taskHistoryId);
   }, []);
 
+  document.onkeydown = (event) => {
+    if (
+      window.location.search === "?tab=basic" &&
+      event.metaKey &&
+      event.which === 83
+    ) {
+      event.preventDefault();
+      handleSave();
+    }
+  };
+
   return (
     <Spin spinning={taskLoading || loading}>
       <Card>

@@ -591,6 +591,17 @@ export type TaskHistoriesQuery = { __typename?: "Query" } & {
     };
 };
 
+export type CreateUserMutationVariables = {
+  input: CreateUserInput;
+};
+
+export type CreateUserMutation = { __typename?: "Mutation" } & {
+  createUser: { __typename?: "User" } & Pick<
+    User,
+    "id" | "name" | "email" | "createdAt" | "updatedAt"
+  >;
+};
+
 export type StorageFragment = { __typename?: "Storage" } & Pick<
   Storage,
   "id" | "name" | "enable" | "key" | "ownerId" | "updatedAt" | "createdAt"
@@ -1189,6 +1200,60 @@ export type TaskHistoriesLazyQueryHookResult = ReturnType<
 export type TaskHistoriesQueryResult = ApolloReactCommon.QueryResult<
   TaskHistoriesQuery,
   TaskHistoriesQueryVariables
+>;
+export const CreateUserDocument = gql`
+  mutation CreateUser($input: CreateUserInput!) {
+    createUser(input: $input) {
+      id
+      name
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export type CreateUserMutationFn = ApolloReactCommon.MutationFunction<
+  CreateUserMutation,
+  CreateUserMutationVariables
+>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateUserMutation,
+    CreateUserMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateUserMutation,
+    CreateUserMutationVariables
+  >(CreateUserDocument, baseOptions);
+}
+export type CreateUserMutationHookResult = ReturnType<
+  typeof useCreateUserMutation
+>;
+export type CreateUserMutationResult = ApolloReactCommon.MutationResult<
+  CreateUserMutation
+>;
+export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateUserMutation,
+  CreateUserMutationVariables
 >;
 export const StorageDocument = gql`
   query Storage($id: ID!) {
