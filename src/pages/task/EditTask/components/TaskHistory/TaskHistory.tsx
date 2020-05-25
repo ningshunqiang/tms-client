@@ -23,12 +23,9 @@ const TaskHistoryList = styled.div`
   }
 `;
 
-const TaskHistoryName = styled.div`
-  font-size: 17px;
-  font-weight: 600;
-`;
-
 const TaskHistoryTime = styled.div`
+  float: right;
+
   color: #ad9f9f;
 `;
 
@@ -61,11 +58,11 @@ function TaskHistory({
           return (
             <List.Item style={{ padding: "0px" }}>
               <TaskHistoryList onClick={() => onHistoryId(item.node.id)}>
-                <TaskHistoryName> {item.node.name}</TaskHistoryName>
+                <div> {item.node.user.name}</div>
                 <TaskHistoryTime>
                   {moment(item.node.createdAt)
                     .utcOffset(480)
-                    .format("YYYY-MM-DD")}
+                    .format("YYYY-MM-DD hh:mm:ss")}
                 </TaskHistoryTime>
               </TaskHistoryList>
             </List.Item>

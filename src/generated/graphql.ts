@@ -30,6 +30,8 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: any;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
 };
 
 export type User = {
@@ -109,6 +111,22 @@ export type StorageTasksArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskLog = {
+  __typename?: "TaskLog";
+  id: Scalars["ID"];
+  result?: Maybe<Scalars["JSONObject"]>;
+  status: RunningStatus;
+  content: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export enum RunningStatus {
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+  TIMEOUT = "TIMEOUT",
+}
+
 export type Timer = {
   __typename?: "Timer";
   id: Scalars["ID"];
@@ -133,6 +151,7 @@ export type Webhook = {
 export type Task = {
   __typename?: "Task";
   id: Scalars["ID"];
+  key: Scalars["String"];
   name: Scalars["String"];
   code: Scalars["String"];
   enable: Scalars["Boolean"];
@@ -146,6 +165,8 @@ export type Task = {
   timers: TimerConnection;
   webhooks: WebhookConnection;
   storages: StorageConnection;
+  logs: TaskLogConnection;
+  dependencies: TaskConnection;
 };
 
 export type TaskCollaboratorsArgs = {
@@ -193,14 +214,32 @@ export type TaskStoragesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskLogsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskDependenciesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
 export type TaskHistory = {
   __typename?: "TaskHistory";
   id: Scalars["ID"];
   name: Scalars["String"];
   code: Scalars["String"];
-  version: Scalars["Int"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
+  user: User;
 };
 
 export type PageInfo = {
@@ -233,6 +272,19 @@ export type TaskHistoryEdge = {
 export type TaskHistoryConnection = {
   __typename?: "TaskHistoryConnection";
   edges: Array<TaskHistoryEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TaskLogEdge = {
+  __typename?: "TaskLogEdge";
+  node: TaskLog;
+  cursor: Scalars["String"];
+};
+
+export type TaskLogConnection = {
+  __typename?: "TaskLogConnection";
+  edges: Array<TaskLogEdge>;
   pageInfo: PageInfo;
   totalCount?: Maybe<Scalars["Int"]>;
 };
@@ -298,6 +350,7 @@ export type TokenPayload = {
 export type Query = {
   __typename?: "Query";
   taskHistory: TaskHistory;
+  taskLog: TaskLog;
   timer: Timer;
   webhook: Webhook;
   task: Task;
@@ -309,6 +362,10 @@ export type Query = {
 };
 
 export type QueryTaskHistoryArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryTaskLogArgs = {
   id: Scalars["ID"];
 };
 
@@ -361,7 +418,6 @@ export type QueryUsersArgs = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  createTaskHistory: TaskHistory;
   createTimer: Timer;
   updateTimer: Timer;
   deleteTimer: Timer;
@@ -379,10 +435,6 @@ export type Mutation = {
   deleteUser: User;
   getToken: TokenPayload;
   refreshToken: TokenPayload;
-};
-
-export type MutationCreateTaskHistoryArgs = {
-  input: CreateTaskHistoryInput;
 };
 
 export type MutationCreateTimerArgs = {
@@ -455,13 +507,6 @@ export type MutationGetTokenArgs = {
   email: Scalars["String"];
 };
 
-export type CreateTaskHistoryInput = {
-  name: Scalars["String"];
-  code: Scalars["String"];
-  version: Scalars["Float"];
-  taskId: Scalars["String"];
-};
-
 export type CreateTimerInput = {
   name: Scalars["String"];
   cron: Scalars["String"];
@@ -489,12 +534,14 @@ export type UpdateWebhookInput = {
 
 export type CreateTaskInput = {
   name: Scalars["String"];
+  key?: Maybe<Scalars["String"]>;
   code: Scalars["String"];
   enable: Scalars["Boolean"];
 };
 
 export type UpdateTaskInput = {
   name?: Maybe<Scalars["String"]>;
+  key?: Maybe<Scalars["String"]>;
   code?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
 };
@@ -554,7 +601,7 @@ export type RefreshTokenMutation = { __typename?: "Mutation" } & {
 export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
   TaskHistory,
   "id" | "name" | "createdAt" | "updatedAt"
->;
+> & { user: { __typename?: "User" } & Pick<User, "name"> };
 
 export type TaskHistoryQueryVariables = {
   id: Scalars["ID"];
@@ -863,6 +910,9 @@ export const TaskHistoryFragmentDoc = gql`
   fragment TaskHistory on TaskHistory {
     id
     name
+    user {
+      name
+    }
     createdAt
     updatedAt
   }

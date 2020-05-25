@@ -1,6 +1,9 @@
 fragment TaskHistory on TaskHistory {
   id
   name
+  user {
+    name
+  }
   createdAt
   updatedAt
 }
