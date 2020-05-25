@@ -57,7 +57,7 @@ const EditTimer: FC<EditTimerModalProps> = (props) => {
         >
           <Form.Item
             initialValue={false}
-            label="应用状态"
+            label="状态"
             name="enable"
             valuePropName="checked"
           >

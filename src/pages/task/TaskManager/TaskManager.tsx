@@ -43,6 +43,15 @@ const MyTask: SFC = (): ReactElement => {
   const columns = useMemo(
     (): SimpleColumnType<TaskFragment>[] => [
       {
+        width: 80,
+        key: "id",
+        title: "ID",
+        dataIndex: "id",
+        copyable: true,
+        ellipsis: true,
+        sorter: true,
+      },
+      {
         key: "name",
         title: "名称",
         dataIndex: "name",
@@ -53,21 +62,23 @@ const MyTask: SFC = (): ReactElement => {
         filterType: FilterType.Input,
       },
       {
-        width: 120,
-        key: "id",
-        title: "id",
-        dataIndex: "id",
+        key: "key",
+        title: "key",
+        dataIndex: "key",
+        width: 80,
         copyable: true,
         ellipsis: true,
         sorter: true,
+        filterType: FilterType.Input,
       },
+
       {
         key: "enable",
-        title: "应用状态",
+        title: "状态",
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-        width: 120,
+        width: 80,
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
@@ -79,11 +90,12 @@ const MyTask: SFC = (): ReactElement => {
             <Badge status="default" text="关闭" />
           ),
       },
+
       {
         key: "createdAt",
         title: "创建时间",
         dataIndex: "createdAt",
-        width: 120,
+        width: 100,
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,
@@ -92,7 +104,7 @@ const MyTask: SFC = (): ReactElement => {
         key: "updatedAt",
         title: "更新时间",
         dataIndex: "updatedAt",
-        width: 120,
+        width: 100,
         ellipsis: true,
         sorter: true,
         valueType: ValueType.DATE_TIME,

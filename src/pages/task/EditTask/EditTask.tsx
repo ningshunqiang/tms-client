@@ -24,7 +24,7 @@ function EditTask() {
           history.push(`${history.location.pathname}?tab=${activeKey}`)
         }
       >
-        <TabPane key="basic" tab="任务编辑">
+        <TabPane key="basic" tab="基本">
           <EditTaskComponent id={id} />
         </TabPane>
         <TabPane key="webhook" tab="Webhook">

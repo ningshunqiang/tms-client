@@ -40,6 +40,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const [updateTask, { loading }] = useUpdateTaskMutation();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
+  const [key, setKey] = useState("");
   const [code, setCode] = useState(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [historyId, setHistoryId] = useState("");
@@ -55,6 +56,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       setCode(data.task.code);
       setEnable(data.task.enable);
       setName(data.task.name);
+      setKey(data.task.key);
     }
   }, [data]);
 
@@ -70,6 +72,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
       enable,
       code,
       name,
+      key,
     };
     try {
       await updateTask({
@@ -79,7 +82,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     } catch (err) {
       message.error("更新任务失败。");
     }
-  }, [code, enable, id, name, updateTask]);
+  }, [code, enable, id, key, name, updateTask]);
 
   const handleHistoryId = useCallback((taskHistoryId: string) => {
     setHistoryId(taskHistoryId);
@@ -113,7 +116,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
         <Form hideRequiredMark layout="vertical">
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="应用状态">
+              <Form.Item label="状态">
                 <Switch checked={enable} onChange={setEnable} />
               </Form.Item>
             </Col>
@@ -125,6 +128,17 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
                   placeholder="请输入名称"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="key">
+                <Input
+                  placeholder="输入key"
+                  value={key}
+                  onChange={(event) => setKey(event.target.value)}
                 />
               </Form.Item>
             </Col>

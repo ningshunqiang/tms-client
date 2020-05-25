@@ -61,14 +61,14 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
         >
           <Form.Item
             initialValue={false}
-            label="应用状态"
+            label="状态"
             name="enable"
             valuePropName="checked"
           >
             <Switch />
           </Form.Item>
           <Form.Item
-            label="Webhook名称"
+            label="名称"
             name="name"
             rules={[{ required: true, message: "Webhook名称" }]}
             shouldUpdate
@@ -77,7 +77,7 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
           </Form.Item>
           {current?.id ? (
             <Form.Item
-              label="token"
+              label="令牌"
               name="token"
               rules={[{ required: true, message: "Token名称" }]}
             >

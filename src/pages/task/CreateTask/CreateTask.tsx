@@ -13,6 +13,7 @@ const CreateTask: SFC = (): ReactElement => {
   const history = useHistory();
   const [enable, setEnable] = useState(false);
   const [name, setName] = useState("");
+  const [key, setKey] = useState("");
   const [code, setCode] = useState(initCode);
   const [createTask, { loading }] = useCreateTask();
 
@@ -21,6 +22,7 @@ const CreateTask: SFC = (): ReactElement => {
       enable,
       code,
       name,
+      key,
     };
     try {
       const newTask = await createTask({ variables: { input: task } });
@@ -28,7 +30,7 @@ const CreateTask: SFC = (): ReactElement => {
       setCode(initCode);
       setEnable(false);
       setName("");
-
+      setKey("");
       history.push(`/tasks/${newTask.data.createTask.id}/edit?tab=basic`);
     } catch (err) {
       message.error("添加任务失败。");
@@ -48,7 +50,7 @@ const CreateTask: SFC = (): ReactElement => {
         <Form hideRequiredMark layout="vertical">
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="应用状态">
+              <Form.Item label="状态">
                 <Switch checked={enable} onChange={setEnable} />
               </Form.Item>
             </Col>
@@ -60,6 +62,17 @@ const CreateTask: SFC = (): ReactElement => {
                   placeholder="请输入名称"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={24}>
+              <Form.Item label="key">
+                <Input
+                  placeholder="请输入 key"
+                  value={key}
+                  onChange={(event) => setKey(event.target.value)}
                 />
               </Form.Item>
             </Col>

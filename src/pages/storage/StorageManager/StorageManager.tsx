@@ -1,6 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
 import { GraphQLTable } from "antd-graphql-table";
-import { FilterType, SimpleColumnType } from "antd-simple-table";
+import { FilterType, SimpleColumnType, ValueType } from "antd-simple-table";
 import React, {
   ReactElement,
   ReactNode,
@@ -102,6 +102,16 @@ const Storage: SFC = (): ReactElement => {
   const columns = useMemo(
     (): SimpleColumnType<StorageFragment>[] => [
       {
+        key: "id",
+        title: "ID",
+        dataIndex: "id",
+        width: 80,
+        copyable: true,
+        ellipsis: true,
+        sorter: true,
+        filterType: FilterType.Input,
+      },
+      {
         key: "name",
         title: "名称",
         dataIndex: "name",
@@ -112,7 +122,7 @@ const Storage: SFC = (): ReactElement => {
         filterType: FilterType.Input,
       },
       {
-        width: 120,
+        width: 80,
         filterType: FilterType.Input,
         key: "key",
         title: "key",
@@ -122,22 +132,25 @@ const Storage: SFC = (): ReactElement => {
         sorter: true,
       },
       {
-        width: 120,
-        filterType: FilterType.Input,
-        key: "ownerId",
-        title: "ownerId",
-        dataIndex: "ownerId",
+        key: "owner.name",
+        title: "创建人",
+        dataIndex: "owner.name",
+        width: 80,
         copyable: true,
         ellipsis: true,
         sorter: true,
+        filterType: FilterType.Input,
+        render: (value, row: StorageFragment) => {
+          return <>{row.owner.name}</>;
+        },
       },
       {
         key: "enable",
-        title: "应用状态",
+        title: "状态",
         dataIndex: "enable",
         ellipsis: true,
         sorter: true,
-        width: 120,
+        width: 80,
         filters: [
           { text: "运行", value: true },
           { text: "关闭", value: false },
@@ -151,10 +164,28 @@ const Storage: SFC = (): ReactElement => {
       },
 
       {
+        key: "createdAt",
+        title: "创建时间",
+        dataIndex: "createdAt",
+        width: 100,
+        ellipsis: true,
+        sorter: true,
+        valueType: ValueType.DATE_TIME,
+      },
+      {
+        key: "updatedAt",
+        title: "更新时间",
+        dataIndex: "updatedAt",
+        width: 100,
+        ellipsis: true,
+        sorter: true,
+        valueType: ValueType.DATE_TIME,
+      },
+      {
         key: "action",
         title: "操作",
         fixed: "right",
-        width: 50,
+        width: 80,
         ellipsis: true,
         sorter: true,
         render: (storage: StorageFragment): ReactElement => (
