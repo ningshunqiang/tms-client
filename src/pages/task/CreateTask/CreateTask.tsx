@@ -4,14 +4,10 @@ import { Button, Card, Col, Form, Input, message, Row, Switch } from "antd";
 import React, { ReactElement, SFC, useState } from "react";
 import { useHistory } from "react-router-dom";
 
+import { CreateTaskInput } from "@/generated/graphql";
 import useCreateTask from "@/hooks/useCreateTaskMutation";
 
-const initCode = `export default () => {\n  // 请编写代码\n   return null;\n}`;
-interface CreateTask {
-  enable: boolean;
-  code: string;
-  name: string;
-}
+const initCode = `export default () => {\n  // 请编写代码\n    return null;\n}`;
 
 const CreateTask: SFC = (): ReactElement => {
   const history = useHistory();
@@ -21,7 +17,7 @@ const CreateTask: SFC = (): ReactElement => {
   const [createTask, { loading }] = useCreateTask();
 
   const handleSave = async (): Promise<void> => {
-    const task: CreateTask = {
+    const task: CreateTaskInput = {
       enable,
       code,
       name,
