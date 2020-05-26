@@ -18,6 +18,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { Link } from "react-router-dom";
 
 import {
   CreateTaskInput,
@@ -102,17 +103,20 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   return (
     <Spin spinning={taskLoading || loading}>
       <Card>
-        <Row>
-          <Col offset={21} span={3}>
-            <Button
-              size="small"
-              type="primary"
-              onClick={() => setHistoryVisible(true)}
-            >
-              历史记录
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            size="small"
+            type="primary"
+            onClick={() => setHistoryVisible(true)}
+          >
+            历史记录
+          </Button>
+          <Link to={`/tasks/${id}/logs`}>
+            <Button size="small" style={{ marginLeft: 10 }} type="primary">
+              任务日志
             </Button>
-          </Col>
-        </Row>
+          </Link>
+        </div>
         <Form hideRequiredMark layout="vertical">
           <Row gutter={16}>
             <Col span={24}>

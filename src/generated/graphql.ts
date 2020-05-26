@@ -144,6 +144,7 @@ export type Webhook = {
   name: Scalars["String"];
   token: Scalars["String"];
   enable: Scalars["Boolean"];
+  sync: Scalars["Boolean"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
 };
@@ -155,7 +156,6 @@ export type Task = {
   name: Scalars["String"];
   code: Scalars["String"];
   enable: Scalars["Boolean"];
-  version: Scalars["Int"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   ownerId: Scalars["String"];
@@ -523,6 +523,7 @@ export type UpdateTimerInput = {
 export type CreateWebhookInput = {
   name: Scalars["String"];
   enable: Scalars["Boolean"];
+  sync: Scalars["Boolean"];
   taskId: Scalars["String"];
 };
 
@@ -530,6 +531,7 @@ export type UpdateWebhookInput = {
   name?: Maybe<Scalars["String"]>;
   token?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
+  sync?: Maybe<Scalars["Boolean"]>;
 };
 
 export type CreateTaskInput = {
@@ -771,6 +773,46 @@ export type UpdateTaskMutation = { __typename?: "Mutation" } & {
   updateTask: { __typename?: "Task" } & TaskFragment;
 };
 
+export type TaskLogFragment = { __typename?: "TaskLog" } & Pick<
+  TaskLog,
+  "id" | "status" | "createdAt"
+>;
+
+export type TaskLogQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type TaskLogQuery = { __typename?: "Query" } & {
+  taskLog: { __typename?: "TaskLog" } & Pick<TaskLog, "result" | "content"> &
+    TaskLogFragment;
+};
+
+export type TaskLogsQueryVariables = {
+  taskId: Scalars["ID"];
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskLogsQuery = { __typename?: "Query" } & {
+  task: { __typename?: "Task" } & Pick<Task, "id"> & {
+      logs: { __typename?: "TaskLogConnection" } & Pick<
+        TaskLogConnection,
+        "totalCount"
+      > & {
+          edges: Array<
+            { __typename?: "TaskLogEdge" } & {
+              node: { __typename?: "TaskLog" } & TaskLogFragment;
+            }
+          >;
+          pageInfo: { __typename?: "PageInfo" } & Pick<
+            PageInfo,
+            "hasNextPage" | "hasPreviousPage" | "startCursor" | "endCursor"
+          >;
+        };
+    };
+};
+
 export type TimerFragment = { __typename?: "Timer" } & Pick<
   Timer,
   "id" | "name" | "createdAt" | "updatedAt" | "cron" | "enable" | "taskId"
@@ -939,6 +981,13 @@ export const TaskFragmentDoc = gql`
     updatedAt
     createdAt
     ownerId
+  }
+`;
+export const TaskLogFragmentDoc = gql`
+  fragment TaskLog on TaskLog {
+    id
+    status
+    createdAt
   }
 `;
 export const TimerFragmentDoc = gql`
@@ -1848,6 +1897,138 @@ export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<
 export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
   UpdateTaskMutation,
   UpdateTaskMutationVariables
+>;
+export const TaskLogDocument = gql`
+  query TaskLog($id: ID!) {
+    taskLog(id: $id) {
+      ...TaskLog
+      result
+      content
+    }
+  }
+  ${TaskLogFragmentDoc}
+`;
+
+/**
+ * __useTaskLogQuery__
+ *
+ * To run a query within a React component, call `useTaskLogQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskLogQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskLogQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTaskLogQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskLogQuery,
+    TaskLogQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskLogQuery, TaskLogQueryVariables>(
+    TaskLogDocument,
+    baseOptions
+  );
+}
+export function useTaskLogLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskLogQuery,
+    TaskLogQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<TaskLogQuery, TaskLogQueryVariables>(
+    TaskLogDocument,
+    baseOptions
+  );
+}
+export type TaskLogQueryHookResult = ReturnType<typeof useTaskLogQuery>;
+export type TaskLogLazyQueryHookResult = ReturnType<typeof useTaskLogLazyQuery>;
+export type TaskLogQueryResult = ApolloReactCommon.QueryResult<
+  TaskLogQuery,
+  TaskLogQueryVariables
+>;
+export const TaskLogsDocument = gql`
+  query TaskLogs(
+    $taskId: ID!
+    $after: String
+    $query: String
+    $orderBy: [Ordering]
+  ) {
+    task(id: $taskId) {
+      id
+      logs(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+        edges {
+          node {
+            ...TaskLog
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        totalCount
+      }
+    }
+  }
+  ${TaskLogFragmentDoc}
+`;
+
+/**
+ * __useTaskLogsQuery__
+ *
+ * To run a query within a React component, call `useTaskLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskLogsQuery({
+ *   variables: {
+ *      taskId: // value for 'taskId'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useTaskLogsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskLogsQuery,
+    TaskLogsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskLogsQuery, TaskLogsQueryVariables>(
+    TaskLogsDocument,
+    baseOptions
+  );
+}
+export function useTaskLogsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskLogsQuery,
+    TaskLogsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<TaskLogsQuery, TaskLogsQueryVariables>(
+    TaskLogsDocument,
+    baseOptions
+  );
+}
+export type TaskLogsQueryHookResult = ReturnType<typeof useTaskLogsQuery>;
+export type TaskLogsLazyQueryHookResult = ReturnType<
+  typeof useTaskLogsLazyQuery
+>;
+export type TaskLogsQueryResult = ApolloReactCommon.QueryResult<
+  TaskLogsQuery,
+  TaskLogsQueryVariables
 >;
 export const TimerDocument = gql`
   query Timer($id: ID!) {
