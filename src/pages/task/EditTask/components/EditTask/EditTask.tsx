@@ -138,9 +138,9 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
           </Row>
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="key">
+              <Form.Item label="标识">
                 <Input
-                  placeholder="输入key"
+                  placeholder="输入标识"
                   value={key}
                   onChange={(event) => setKey(event.target.value)}
                 />
