@@ -10,6 +10,7 @@ import {
   Spin,
   Switch,
 } from "antd";
+import keyboardJS from "keyboardjs";
 import React, {
   ReactElement,
   SFC,
@@ -85,16 +86,15 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
     setHistoryId(taskHistoryId);
   }, []);
 
-  document.onkeydown = (event) => {
-    if (
-      window.location.search === "?tab=basic" &&
-      event.metaKey &&
-      event.which === 83
-    ) {
-      event.preventDefault();
-      handleSave();
-    }
-  };
+  useEffect(() => {
+    keyboardJS.bind("command+s", (e) => {
+      e.preventDefault();
+      if (window.location.search === "?tab=basic") {
+        handleSave();
+      }
+    });
+    return () => keyboardJS.unbind("command+s");
+  }, [handleSave]);
 
   return (
     <Spin spinning={taskLoading || loading}>
