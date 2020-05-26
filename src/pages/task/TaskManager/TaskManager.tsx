@@ -1,4 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
+import { GraphQLTable } from "antd-graphql-table";
+import { FilterType, SimpleColumnType, ValueType } from "antd-simple-table";
 import React, {
   ReactElement,
   ReactNode,
@@ -8,12 +10,6 @@ import React, {
 } from "react";
 import { Link } from "umi";
 
-import { QueryTable } from "@/components/QueryTable/QueryTable";
-import {
-  FilterType,
-  SimpleColumnType,
-  ValueType,
-} from "@/components/SimpleTable";
 import {
   TaskFragment,
   TasksQuery,
@@ -136,7 +132,7 @@ const MyTask: SFC = (): ReactElement => {
 
   return (
     <Card>
-      <QueryTable<TaskFragment>
+      <GraphQLTable<TaskFragment>
         columns={columns}
         dataSource={data?.tasks.edges.map(({ node }): TaskFragment => node)}
         hasMore={data?.tasks.pageInfo.hasNextPage}

@@ -1,4 +1,6 @@
 import { Badge, Button, Card, Divider, message, Popconfirm } from "antd";
+import { GraphQLTable } from "antd-graphql-table";
+import { FilterType, SimpleColumnType } from "antd-simple-table";
 import React, {
   ReactElement,
   ReactNode,
@@ -8,8 +10,6 @@ import React, {
   useState,
 } from "react";
 
-import { QueryTable } from "@/components/QueryTable/QueryTable";
-import { FilterType, SimpleColumnType } from "@/components/SimpleTable";
 import {
   StorageFragment,
   StoragesQuery,
@@ -189,7 +189,7 @@ const Storage: SFC = (): ReactElement => {
 
   return (
     <Card>
-      <QueryTable<StorageFragment>
+      <GraphQLTable<StorageFragment>
         columns={columns}
         dataSource={data?.storages.edges.map(
           ({ node }): StorageFragment => node

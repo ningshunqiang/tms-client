@@ -32,48 +32,332 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type CreateStorageInput = {
-  key?: Maybe<Scalars["String"]>;
-  name: Scalars["String"];
-  enable: Scalars["Boolean"];
-};
-
-export type CreateTaskHistoryInput = {
-  name: Scalars["String"];
-  code: Scalars["String"];
-  version: Scalars["Float"];
-  taskId: Scalars["String"];
-};
-
-export type CreateTaskInput = {
-  name: Scalars["String"];
-  code: Scalars["String"];
-  enable: Scalars["Boolean"];
-};
-
-export type CreateTimerInput = {
-  name: Scalars["String"];
-  cron: Scalars["String"];
-  enable: Scalars["Boolean"];
-  taskId: Scalars["String"];
-};
-
-export type CreateUserInput = {
+export type User = {
+  __typename?: "User";
+  id: Scalars["ID"];
   name: Scalars["String"];
   email: Scalars["String"];
-  password: Scalars["String"];
+  role: Role;
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  tasks: TaskConnection;
+  storages: StorageConnection;
 };
 
-export type CreateWebhookInput = {
-  name: Scalars["String"];
-  enable: Scalars["Boolean"];
-  taskId: Scalars["String"];
+export type UserTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type UserStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export enum Role {
+  ADMIN = "ADMIN",
+  USER = "USER",
+}
+
+export type Ordering = {
+  sort: Scalars["String"];
+  direction?: Maybe<Direction>;
 };
 
 export enum Direction {
   ASC = "ASC",
   DESC = "DESC",
 }
+
+export type Storage = {
+  __typename?: "Storage";
+  id: Scalars["ID"];
+  key: Scalars["String"];
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  ownerId: Scalars["String"];
+  owner: User;
+  collaborators: UserConnection;
+  tasks: TaskConnection;
+};
+
+export type StorageCollaboratorsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StorageTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type Timer = {
+  __typename?: "Timer";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  cron: Scalars["String"];
+  enable: Scalars["Boolean"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  taskId: Scalars["String"];
+};
+
+export type Webhook = {
+  __typename?: "Webhook";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  token: Scalars["String"];
+  enable: Scalars["Boolean"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export type Task = {
+  __typename?: "Task";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  code: Scalars["String"];
+  enable: Scalars["Boolean"];
+  version: Scalars["Int"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  ownerId: Scalars["String"];
+  owner: User;
+  collaborators: UserConnection;
+  histories: TaskHistoryConnection;
+  timers: TimerConnection;
+  webhooks: WebhookConnection;
+  storages: StorageConnection;
+};
+
+export type TaskCollaboratorsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistoriesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskTimersArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskWebhooksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistory = {
+  __typename?: "TaskHistory";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  code: Scalars["String"];
+  version: Scalars["Int"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export type PageInfo = {
+  __typename?: "PageInfo";
+  hasNextPage: Scalars["Boolean"];
+  hasPreviousPage: Scalars["Boolean"];
+  startCursor?: Maybe<Scalars["String"]>;
+  endCursor?: Maybe<Scalars["String"]>;
+};
+
+export type StorageEdge = {
+  __typename?: "StorageEdge";
+  node: Storage;
+  cursor: Scalars["String"];
+};
+
+export type StorageConnection = {
+  __typename?: "StorageConnection";
+  edges: Array<StorageEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TaskHistoryEdge = {
+  __typename?: "TaskHistoryEdge";
+  node: TaskHistory;
+  cursor: Scalars["String"];
+};
+
+export type TaskHistoryConnection = {
+  __typename?: "TaskHistoryConnection";
+  edges: Array<TaskHistoryEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TimerEdge = {
+  __typename?: "TimerEdge";
+  node: Timer;
+  cursor: Scalars["String"];
+};
+
+export type TimerConnection = {
+  __typename?: "TimerConnection";
+  edges: Array<TimerEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type UserEdge = {
+  __typename?: "UserEdge";
+  node: User;
+  cursor: Scalars["String"];
+};
+
+export type UserConnection = {
+  __typename?: "UserConnection";
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type WebhookEdge = {
+  __typename?: "WebhookEdge";
+  node: Webhook;
+  cursor: Scalars["String"];
+};
+
+export type WebhookConnection = {
+  __typename?: "WebhookConnection";
+  edges: Array<WebhookEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TaskEdge = {
+  __typename?: "TaskEdge";
+  node: Task;
+  cursor: Scalars["String"];
+};
+
+export type TaskConnection = {
+  __typename?: "TaskConnection";
+  edges: Array<TaskEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TokenPayload = {
+  __typename?: "TokenPayload";
+  token: Scalars["String"];
+  user: User;
+};
+
+export type Query = {
+  __typename?: "Query";
+  taskHistory: TaskHistory;
+  timer: Timer;
+  webhook: Webhook;
+  task: Task;
+  tasks: TaskConnection;
+  storage: Storage;
+  storages: StorageConnection;
+  user: User;
+  users: UserConnection;
+};
+
+export type QueryTaskHistoryArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryTimerArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryWebhookArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryTaskArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type QueryStorageArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type QueryUserArgs = {
+  id?: Maybe<Scalars["ID"]>;
+};
+
+export type QueryUsersArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
 
 export type Mutation = {
   __typename?: "Mutation";
@@ -171,272 +455,18 @@ export type MutationGetTokenArgs = {
   email: Scalars["String"];
 };
 
-export type Ordering = {
-  sort: Scalars["String"];
-  direction?: Maybe<Direction>;
-};
-
-export type PageInfo = {
-  __typename?: "PageInfo";
-  hasNextPage: Scalars["Boolean"];
-  hasPreviousPage: Scalars["Boolean"];
-  startCursor?: Maybe<Scalars["String"]>;
-  endCursor?: Maybe<Scalars["String"]>;
-};
-
-export type Query = {
-  __typename?: "Query";
-  taskHistory: TaskHistory;
-  timer: Timer;
-  webhook: Webhook;
-  task: Task;
-  tasks: TaskConnection;
-  storage: Storage;
-  storages: StorageConnection;
-  user: User;
-  users: UserConnection;
-};
-
-export type QueryTaskHistoryArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryTimerArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryWebhookArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryTaskArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryTasksArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type QueryStorageArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryStoragesArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type QueryUserArgs = {
-  id?: Maybe<Scalars["ID"]>;
-};
-
-export type QueryUsersArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export enum Role {
-  ADMIN = "ADMIN",
-  USER = "USER",
-}
-
-export type Storage = {
-  __typename?: "Storage";
-  id: Scalars["ID"];
-  key: Scalars["String"];
-  name: Scalars["String"];
-  enable: Scalars["Boolean"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
-  ownerId: Scalars["String"];
-  owner: User;
-  collaborators: UserConnection;
-  tasks: TaskConnection;
-};
-
-export type StorageCollaboratorsArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type StorageTasksArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type StorageConnection = {
-  __typename?: "StorageConnection";
-  edges: Array<StorageEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type StorageEdge = {
-  __typename?: "StorageEdge";
-  node: Storage;
-  cursor: Scalars["String"];
-};
-
-export type Task = {
-  __typename?: "Task";
-  id: Scalars["ID"];
+export type CreateTaskHistoryInput = {
   name: Scalars["String"];
   code: Scalars["String"];
-  enable: Scalars["Boolean"];
-  version: Scalars["Int"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
-  ownerId: Scalars["String"];
-  owner: User;
-  collaborators: UserConnection;
-  histories: TaskHistoryConnection;
-  timers: TimerConnection;
-  webhooks: WebhookConnection;
-  storages: StorageConnection;
-};
-
-export type TaskCollaboratorsArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type TaskHistoriesArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type TaskTimersArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type TaskWebhooksArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type TaskStoragesArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type TaskConnection = {
-  __typename?: "TaskConnection";
-  edges: Array<TaskEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type TaskEdge = {
-  __typename?: "TaskEdge";
-  node: Task;
-  cursor: Scalars["String"];
-};
-
-export type TaskHistory = {
-  __typename?: "TaskHistory";
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  code: Scalars["String"];
-  version: Scalars["Int"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
-};
-
-export type TaskHistoryConnection = {
-  __typename?: "TaskHistoryConnection";
-  edges: Array<TaskHistoryEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type TaskHistoryEdge = {
-  __typename?: "TaskHistoryEdge";
-  node: TaskHistory;
-  cursor: Scalars["String"];
-};
-
-export type Timer = {
-  __typename?: "Timer";
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  cron: Scalars["String"];
-  enable: Scalars["Boolean"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
+  version: Scalars["Float"];
   taskId: Scalars["String"];
 };
 
-export type TimerConnection = {
-  __typename?: "TimerConnection";
-  edges: Array<TimerEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type TimerEdge = {
-  __typename?: "TimerEdge";
-  node: Timer;
-  cursor: Scalars["String"];
-};
-
-export type TokenPayload = {
-  __typename?: "TokenPayload";
-  token: Scalars["String"];
-  user: User;
-};
-
-export type UpdateStorageInput = {
-  key?: Maybe<Scalars["String"]>;
-  name?: Maybe<Scalars["String"]>;
-  enable?: Maybe<Scalars["Boolean"]>;
-};
-
-export type UpdateTaskInput = {
-  name?: Maybe<Scalars["String"]>;
-  code?: Maybe<Scalars["String"]>;
-  enable?: Maybe<Scalars["Boolean"]>;
+export type CreateTimerInput = {
+  name: Scalars["String"];
+  cron: Scalars["String"];
+  enable: Scalars["Boolean"];
+  taskId: Scalars["String"];
 };
 
 export type UpdateTimerInput = {
@@ -445,10 +475,10 @@ export type UpdateTimerInput = {
   enable?: Maybe<Scalars["Boolean"]>;
 };
 
-export type UpdateUserInput = {
-  name?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  password?: Maybe<Scalars["String"]>;
+export type CreateWebhookInput = {
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+  taskId: Scalars["String"];
 };
 
 export type UpdateWebhookInput = {
@@ -457,70 +487,40 @@ export type UpdateWebhookInput = {
   enable?: Maybe<Scalars["Boolean"]>;
 };
 
-export type User = {
-  __typename?: "User";
-  id: Scalars["ID"];
+export type CreateTaskInput = {
+  name: Scalars["String"];
+  code: Scalars["String"];
+  enable: Scalars["Boolean"];
+};
+
+export type UpdateTaskInput = {
+  name?: Maybe<Scalars["String"]>;
+  code?: Maybe<Scalars["String"]>;
+  enable?: Maybe<Scalars["Boolean"]>;
+};
+
+export type CreateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+};
+
+export type UpdateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  enable?: Maybe<Scalars["Boolean"]>;
+};
+
+export type CreateUserInput = {
   name: Scalars["String"];
   email: Scalars["String"];
-  role: Role;
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
-  tasks: TaskConnection;
-  storages: StorageConnection;
+  password: Scalars["String"];
 };
 
-export type UserTasksArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type UserStoragesArgs = {
-  query?: Maybe<Scalars["String"]>;
-  before?: Maybe<Scalars["String"]>;
-  after?: Maybe<Scalars["String"]>;
-  first?: Maybe<Scalars["Int"]>;
-  last?: Maybe<Scalars["Int"]>;
-  orderBy?: Maybe<Array<Maybe<Ordering>>>;
-};
-
-export type UserConnection = {
-  __typename?: "UserConnection";
-  edges: Array<UserEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type UserEdge = {
-  __typename?: "UserEdge";
-  node: User;
-  cursor: Scalars["String"];
-};
-
-export type Webhook = {
-  __typename?: "Webhook";
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  token: Scalars["String"];
-  enable: Scalars["Boolean"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
-};
-
-export type WebhookConnection = {
-  __typename?: "WebhookConnection";
-  edges: Array<WebhookEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
-export type WebhookEdge = {
-  __typename?: "WebhookEdge";
-  node: Webhook;
-  cursor: Scalars["String"];
+export type UpdateUserInput = {
+  name?: Maybe<Scalars["String"]>;
+  email?: Maybe<Scalars["String"]>;
+  password?: Maybe<Scalars["String"]>;
 };
 
 export type UserFragment = { __typename?: "User" } & Pick<
@@ -549,6 +549,46 @@ export type RefreshTokenMutationVariables = {};
 
 export type RefreshTokenMutation = { __typename?: "Mutation" } & {
   refreshToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token">;
+};
+
+export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
+  TaskHistory,
+  "id" | "name" | "createdAt" | "updatedAt"
+>;
+
+export type TaskHistoryQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type TaskHistoryQuery = { __typename?: "Query" } & {
+  taskHistory: { __typename?: "TaskHistory" } & Pick<TaskHistory, "code"> &
+    TaskHistoryFragment;
+};
+
+export type TaskHistoriesQueryVariables = {
+  taskId: Scalars["ID"];
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistoriesQuery = { __typename?: "Query" } & {
+  task: { __typename?: "Task" } & Pick<Task, "id"> & {
+      histories: { __typename?: "TaskHistoryConnection" } & Pick<
+        TaskHistoryConnection,
+        "totalCount"
+      > & {
+          edges: Array<
+            { __typename?: "TaskHistoryEdge" } & {
+              node: { __typename?: "TaskHistory" } & TaskHistoryFragment;
+            }
+          >;
+          pageInfo: { __typename?: "PageInfo" } & Pick<
+            PageInfo,
+            "hasNextPage" | "hasPreviousPage" | "startCursor" | "endCursor"
+          >;
+        };
+    };
 };
 
 export type CreateUserMutationVariables = {
@@ -675,12 +715,12 @@ export type CreateTaskMutation = { __typename?: "Mutation" } & {
   createTask: { __typename?: "Task" } & TaskFragment;
 };
 
-export type UpdatedTaskMutationVariables = {
+export type UpdateTaskMutationVariables = {
   id: Scalars["ID"];
   input: UpdateTaskInput;
 };
 
-export type UpdatedTaskMutation = { __typename?: "Mutation" } & {
+export type UpdateTaskMutation = { __typename?: "Mutation" } & {
   updateTask: { __typename?: "Task" } & TaskFragment;
 };
 
@@ -817,6 +857,14 @@ export const UserFragmentDoc = gql`
     id
     name
     email
+  }
+`;
+export const TaskHistoryFragmentDoc = gql`
+  fragment TaskHistory on TaskHistory {
+    id
+    name
+    createdAt
+    updatedAt
   }
 `;
 export const StorageFragmentDoc = gql`
@@ -1017,6 +1065,141 @@ export type RefreshTokenMutationResult = ApolloReactCommon.MutationResult<
 export type RefreshTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
   RefreshTokenMutation,
   RefreshTokenMutationVariables
+>;
+export const TaskHistoryDocument = gql`
+  query TaskHistory($id: ID!) {
+    taskHistory(id: $id) {
+      ...TaskHistory
+      code
+    }
+  }
+  ${TaskHistoryFragmentDoc}
+`;
+
+/**
+ * __useTaskHistoryQuery__
+ *
+ * To run a query within a React component, call `useTaskHistoryQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskHistoryQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskHistoryQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTaskHistoryQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskHistoryQuery, TaskHistoryQueryVariables>(
+    TaskHistoryDocument,
+    baseOptions
+  );
+}
+export function useTaskHistoryLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<
+    TaskHistoryQuery,
+    TaskHistoryQueryVariables
+  >(TaskHistoryDocument, baseOptions);
+}
+export type TaskHistoryQueryHookResult = ReturnType<typeof useTaskHistoryQuery>;
+export type TaskHistoryLazyQueryHookResult = ReturnType<
+  typeof useTaskHistoryLazyQuery
+>;
+export type TaskHistoryQueryResult = ApolloReactCommon.QueryResult<
+  TaskHistoryQuery,
+  TaskHistoryQueryVariables
+>;
+export const TaskHistoriesDocument = gql`
+  query TaskHistories(
+    $taskId: ID!
+    $after: String
+    $query: String
+    $orderBy: [Ordering]
+  ) {
+    task(id: $taskId) {
+      id
+      histories(first: 20, after: $after, query: $query, orderBy: $orderBy) {
+        edges {
+          node {
+            ...TaskHistory
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        totalCount
+      }
+    }
+  }
+  ${TaskHistoryFragmentDoc}
+`;
+
+/**
+ * __useTaskHistoriesQuery__
+ *
+ * To run a query within a React component, call `useTaskHistoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskHistoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskHistoriesQuery({
+ *   variables: {
+ *      taskId: // value for 'taskId'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useTaskHistoriesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskHistoriesQuery,
+    TaskHistoriesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<
+    TaskHistoriesQuery,
+    TaskHistoriesQueryVariables
+  >(TaskHistoriesDocument, baseOptions);
+}
+export function useTaskHistoriesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskHistoriesQuery,
+    TaskHistoriesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<
+    TaskHistoriesQuery,
+    TaskHistoriesQueryVariables
+  >(TaskHistoriesDocument, baseOptions);
+}
+export type TaskHistoriesQueryHookResult = ReturnType<
+  typeof useTaskHistoriesQuery
+>;
+export type TaskHistoriesLazyQueryHookResult = ReturnType<
+  typeof useTaskHistoriesLazyQuery
+>;
+export type TaskHistoriesQueryResult = ApolloReactCommon.QueryResult<
+  TaskHistoriesQuery,
+  TaskHistoriesQueryVariables
 >;
 export const CreateUserDocument = gql`
   mutation CreateUser($input: CreateUserInput!) {
@@ -1561,57 +1744,57 @@ export type CreateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
   CreateTaskMutation,
   CreateTaskMutationVariables
 >;
-export const UpdatedTaskDocument = gql`
-  mutation UpdatedTask($id: ID!, $input: UpdateTaskInput!) {
+export const UpdateTaskDocument = gql`
+  mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) {
     updateTask(id: $id, input: $input) {
       ...Task
     }
   }
   ${TaskFragmentDoc}
 `;
-export type UpdatedTaskMutationFn = ApolloReactCommon.MutationFunction<
-  UpdatedTaskMutation,
-  UpdatedTaskMutationVariables
+export type UpdateTaskMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateTaskMutation,
+  UpdateTaskMutationVariables
 >;
 
 /**
- * __useUpdatedTaskMutation__
+ * __useUpdateTaskMutation__
  *
- * To run a mutation, you first call `useUpdatedTaskMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdatedTaskMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTaskMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updatedTaskMutation, { data, loading, error }] = useUpdatedTaskMutation({
+ * const [updateTaskMutation, { data, loading, error }] = useUpdateTaskMutation({
  *   variables: {
  *      id: // value for 'id'
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdatedTaskMutation(
+export function useUpdateTaskMutation(
   baseOptions?: ApolloReactHooks.MutationHookOptions<
-    UpdatedTaskMutation,
-    UpdatedTaskMutationVariables
+    UpdateTaskMutation,
+    UpdateTaskMutationVariables
   >
 ) {
   return ApolloReactHooks.useMutation<
-    UpdatedTaskMutation,
-    UpdatedTaskMutationVariables
-  >(UpdatedTaskDocument, baseOptions);
+    UpdateTaskMutation,
+    UpdateTaskMutationVariables
+  >(UpdateTaskDocument, baseOptions);
 }
-export type UpdatedTaskMutationHookResult = ReturnType<
-  typeof useUpdatedTaskMutation
+export type UpdateTaskMutationHookResult = ReturnType<
+  typeof useUpdateTaskMutation
 >;
-export type UpdatedTaskMutationResult = ApolloReactCommon.MutationResult<
-  UpdatedTaskMutation
+export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<
+  UpdateTaskMutation
 >;
-export type UpdatedTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
-  UpdatedTaskMutation,
-  UpdatedTaskMutationVariables
+export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateTaskMutation,
+  UpdateTaskMutationVariables
 >;
 export const TimerDocument = gql`
   query Timer($id: ID!) {
