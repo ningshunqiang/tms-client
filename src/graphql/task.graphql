@@ -45,5 +45,6 @@ mutation CreateTask($input: CreateTaskInput!) {
 mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) {
   updateTask(id: $id, input: $input) {
     ...Task
+    code
   }
 }
