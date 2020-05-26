@@ -134,15 +134,12 @@ const Storage: SFC = (): ReactElement => {
       {
         key: "owner.name",
         title: "创建人",
-        dataIndex: "owner.name",
+        dataIndex: ["owner", "name"],
         width: 80,
         copyable: true,
         ellipsis: true,
         sorter: true,
         filterType: FilterType.Input,
-        render: (value, row: StorageFragment) => {
-          return <>{row.owner.name}</>;
-        },
       },
       {
         key: "enable",
