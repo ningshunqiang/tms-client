@@ -651,8 +651,8 @@ export type CreateUserMutation = { __typename?: "Mutation" } & {
 
 export type StorageFragment = { __typename?: "Storage" } & Pick<
   Storage,
-  "id" | "name" | "enable" | "key" | "ownerId" | "updatedAt" | "createdAt"
->;
+  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt"
+> & { owner: { __typename?: "User" } & Pick<User, "name"> };
 
 export type StorageQueryVariables = {
   id: Scalars["ID"];
@@ -712,7 +712,7 @@ export type UpdateStorageMutation = { __typename?: "Mutation" } & {
 
 export type TaskFragment = { __typename?: "Task" } & Pick<
   Task,
-  "id" | "name" | "code" | "enable" | "updatedAt" | "createdAt" | "ownerId"
+  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt" | "ownerId"
 >;
 
 export type TaskQueryVariables = {
@@ -720,7 +720,7 @@ export type TaskQueryVariables = {
 };
 
 export type TaskQuery = { __typename?: "Query" } & {
-  task: { __typename?: "Task" } & TaskFragment;
+  task: { __typename?: "Task" } & Pick<Task, "code"> & TaskFragment;
 };
 
 export type TasksQueryVariables = {
@@ -923,7 +923,9 @@ export const StorageFragmentDoc = gql`
     name
     enable
     key
-    ownerId
+    owner {
+      name
+    }
     updatedAt
     createdAt
   }
@@ -932,8 +934,8 @@ export const TaskFragmentDoc = gql`
   fragment Task on Task {
     id
     name
-    code
     enable
+    key
     updatedAt
     createdAt
     ownerId
@@ -1582,6 +1584,7 @@ export const TaskDocument = gql`
   query Task($id: ID!) {
     task(id: $id) {
       ...Task
+      code
     }
   }
   ${TaskFragmentDoc}
