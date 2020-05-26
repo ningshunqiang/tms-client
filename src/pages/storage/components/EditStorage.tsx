@@ -76,7 +76,7 @@ const EditStorage: SFC<EditStorageModalProps> = ({
           </Form.Item>
 
           <Form.Item
-            label="key"
+            label="标识"
             name="key"
             rules={[{ required: true, message: "key" }]}
           >
