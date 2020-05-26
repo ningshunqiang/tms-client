@@ -63,7 +63,7 @@ const MyTask: SFC = (): ReactElement => {
       },
       {
         key: "key",
-        title: "key",
+        title: "标识",
         dataIndex: "key",
         width: 80,
         copyable: true,

@@ -125,7 +125,7 @@ const Storage: SFC = (): ReactElement => {
         width: 80,
         filterType: FilterType.Input,
         key: "key",
-        title: "key",
+        title: "标识",
         dataIndex: "key",
         copyable: true,
         ellipsis: true,

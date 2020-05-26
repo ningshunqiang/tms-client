@@ -42,7 +42,7 @@ const CreateTask: SFC = (): ReactElement => {
     } catch (err) {
       message.error("添加任务失败。");
     }
-  }, [code, createTask, enable, history, name]);
+  }, [code, createTask, enable, history, key, name]);
 
   useEffect(() => {
     keyboardJS.bind("command+s", (e) => {
@@ -76,9 +76,9 @@ const CreateTask: SFC = (): ReactElement => {
           </Row>
           <Row gutter={16}>
             <Col span={24}>
-              <Form.Item label="key">
+              <Form.Item label="标识">
                 <Input
-                  placeholder="请输入 key"
+                  placeholder="请输入标识"
                   value={key}
                   onChange={(event) => setKey(event.target.value)}
                 />
