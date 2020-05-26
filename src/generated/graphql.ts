@@ -30,6 +30,8 @@ export type Scalars = {
   Float: number;
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: any;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
 };
 
 export type User = {
@@ -109,6 +111,22 @@ export type StorageTasksArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskLog = {
+  __typename?: "TaskLog";
+  id: Scalars["ID"];
+  result?: Maybe<Scalars["JSONObject"]>;
+  status: RunningStatus;
+  content: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export enum RunningStatus {
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+  TIMEOUT = "TIMEOUT",
+}
+
 export type Timer = {
   __typename?: "Timer";
   id: Scalars["ID"];
@@ -126,6 +144,7 @@ export type Webhook = {
   name: Scalars["String"];
   token: Scalars["String"];
   enable: Scalars["Boolean"];
+  sync: Scalars["Boolean"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
 };
@@ -133,10 +152,10 @@ export type Webhook = {
 export type Task = {
   __typename?: "Task";
   id: Scalars["ID"];
+  key: Scalars["String"];
   name: Scalars["String"];
   code: Scalars["String"];
   enable: Scalars["Boolean"];
-  version: Scalars["Int"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
   ownerId: Scalars["String"];
@@ -146,6 +165,8 @@ export type Task = {
   timers: TimerConnection;
   webhooks: WebhookConnection;
   storages: StorageConnection;
+  logs: TaskLogConnection;
+  dependencies: TaskConnection;
 };
 
 export type TaskCollaboratorsArgs = {
@@ -193,14 +214,32 @@ export type TaskStoragesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskLogsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskDependenciesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
 export type TaskHistory = {
   __typename?: "TaskHistory";
   id: Scalars["ID"];
   name: Scalars["String"];
   code: Scalars["String"];
-  version: Scalars["Int"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
+  user: User;
 };
 
 export type PageInfo = {
@@ -233,6 +272,19 @@ export type TaskHistoryEdge = {
 export type TaskHistoryConnection = {
   __typename?: "TaskHistoryConnection";
   edges: Array<TaskHistoryEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type TaskLogEdge = {
+  __typename?: "TaskLogEdge";
+  node: TaskLog;
+  cursor: Scalars["String"];
+};
+
+export type TaskLogConnection = {
+  __typename?: "TaskLogConnection";
+  edges: Array<TaskLogEdge>;
   pageInfo: PageInfo;
   totalCount?: Maybe<Scalars["Int"]>;
 };
@@ -298,6 +350,7 @@ export type TokenPayload = {
 export type Query = {
   __typename?: "Query";
   taskHistory: TaskHistory;
+  taskLog: TaskLog;
   timer: Timer;
   webhook: Webhook;
   task: Task;
@@ -309,6 +362,10 @@ export type Query = {
 };
 
 export type QueryTaskHistoryArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryTaskLogArgs = {
   id: Scalars["ID"];
 };
 
@@ -361,7 +418,6 @@ export type QueryUsersArgs = {
 
 export type Mutation = {
   __typename?: "Mutation";
-  createTaskHistory: TaskHistory;
   createTimer: Timer;
   updateTimer: Timer;
   deleteTimer: Timer;
@@ -379,10 +435,6 @@ export type Mutation = {
   deleteUser: User;
   getToken: TokenPayload;
   refreshToken: TokenPayload;
-};
-
-export type MutationCreateTaskHistoryArgs = {
-  input: CreateTaskHistoryInput;
 };
 
 export type MutationCreateTimerArgs = {
@@ -455,13 +507,6 @@ export type MutationGetTokenArgs = {
   email: Scalars["String"];
 };
 
-export type CreateTaskHistoryInput = {
-  name: Scalars["String"];
-  code: Scalars["String"];
-  version: Scalars["Float"];
-  taskId: Scalars["String"];
-};
-
 export type CreateTimerInput = {
   name: Scalars["String"];
   cron: Scalars["String"];
@@ -478,6 +523,7 @@ export type UpdateTimerInput = {
 export type CreateWebhookInput = {
   name: Scalars["String"];
   enable: Scalars["Boolean"];
+  sync: Scalars["Boolean"];
   taskId: Scalars["String"];
 };
 
@@ -485,16 +531,19 @@ export type UpdateWebhookInput = {
   name?: Maybe<Scalars["String"]>;
   token?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
+  sync?: Maybe<Scalars["Boolean"]>;
 };
 
 export type CreateTaskInput = {
   name: Scalars["String"];
+  key?: Maybe<Scalars["String"]>;
   code: Scalars["String"];
   enable: Scalars["Boolean"];
 };
 
 export type UpdateTaskInput = {
   name?: Maybe<Scalars["String"]>;
+  key?: Maybe<Scalars["String"]>;
   code?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
 };
@@ -724,6 +773,46 @@ export type UpdateTaskMutation = { __typename?: "Mutation" } & {
   updateTask: { __typename?: "Task" } & TaskFragment;
 };
 
+export type TaskLogFragment = { __typename?: "TaskLog" } & Pick<
+  TaskLog,
+  "id" | "status" | "createdAt"
+>;
+
+export type TaskLogQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type TaskLogQuery = { __typename?: "Query" } & {
+  taskLog: { __typename?: "TaskLog" } & Pick<TaskLog, "result" | "content"> &
+    TaskLogFragment;
+};
+
+export type TaskLogsQueryVariables = {
+  taskId: Scalars["ID"];
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskLogsQuery = { __typename?: "Query" } & {
+  task: { __typename?: "Task" } & Pick<Task, "id"> & {
+      logs: { __typename?: "TaskLogConnection" } & Pick<
+        TaskLogConnection,
+        "totalCount"
+      > & {
+          edges: Array<
+            { __typename?: "TaskLogEdge" } & {
+              node: { __typename?: "TaskLog" } & TaskLogFragment;
+            }
+          >;
+          pageInfo: { __typename?: "PageInfo" } & Pick<
+            PageInfo,
+            "hasNextPage" | "hasPreviousPage" | "startCursor" | "endCursor"
+          >;
+        };
+    };
+};
+
 export type TimerFragment = { __typename?: "Timer" } & Pick<
   Timer,
   "id" | "name" | "createdAt" | "updatedAt" | "cron" | "enable" | "taskId"
@@ -887,6 +976,13 @@ export const TaskFragmentDoc = gql`
     updatedAt
     createdAt
     ownerId
+  }
+`;
+export const TaskLogFragmentDoc = gql`
+  fragment TaskLog on TaskLog {
+    id
+    status
+    createdAt
   }
 `;
 export const TimerFragmentDoc = gql`
@@ -1795,6 +1891,138 @@ export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<
 export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<
   UpdateTaskMutation,
   UpdateTaskMutationVariables
+>;
+export const TaskLogDocument = gql`
+  query TaskLog($id: ID!) {
+    taskLog(id: $id) {
+      ...TaskLog
+      result
+      content
+    }
+  }
+  ${TaskLogFragmentDoc}
+`;
+
+/**
+ * __useTaskLogQuery__
+ *
+ * To run a query within a React component, call `useTaskLogQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskLogQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskLogQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTaskLogQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskLogQuery,
+    TaskLogQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskLogQuery, TaskLogQueryVariables>(
+    TaskLogDocument,
+    baseOptions
+  );
+}
+export function useTaskLogLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskLogQuery,
+    TaskLogQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<TaskLogQuery, TaskLogQueryVariables>(
+    TaskLogDocument,
+    baseOptions
+  );
+}
+export type TaskLogQueryHookResult = ReturnType<typeof useTaskLogQuery>;
+export type TaskLogLazyQueryHookResult = ReturnType<typeof useTaskLogLazyQuery>;
+export type TaskLogQueryResult = ApolloReactCommon.QueryResult<
+  TaskLogQuery,
+  TaskLogQueryVariables
+>;
+export const TaskLogsDocument = gql`
+  query TaskLogs(
+    $taskId: ID!
+    $after: String
+    $query: String
+    $orderBy: [Ordering]
+  ) {
+    task(id: $taskId) {
+      id
+      logs(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+        edges {
+          node {
+            ...TaskLog
+          }
+        }
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        totalCount
+      }
+    }
+  }
+  ${TaskLogFragmentDoc}
+`;
+
+/**
+ * __useTaskLogsQuery__
+ *
+ * To run a query within a React component, call `useTaskLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskLogsQuery({
+ *   variables: {
+ *      taskId: // value for 'taskId'
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useTaskLogsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TaskLogsQuery,
+    TaskLogsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<TaskLogsQuery, TaskLogsQueryVariables>(
+    TaskLogsDocument,
+    baseOptions
+  );
+}
+export function useTaskLogsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TaskLogsQuery,
+    TaskLogsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<TaskLogsQuery, TaskLogsQueryVariables>(
+    TaskLogsDocument,
+    baseOptions
+  );
+}
+export type TaskLogsQueryHookResult = ReturnType<typeof useTaskLogsQuery>;
+export type TaskLogsLazyQueryHookResult = ReturnType<
+  typeof useTaskLogsLazyQuery
+>;
+export type TaskLogsQueryResult = ApolloReactCommon.QueryResult<
+  TaskLogsQuery,
+  TaskLogsQueryVariables
 >;
 export const TimerDocument = gql`
   query Timer($id: ID!) {

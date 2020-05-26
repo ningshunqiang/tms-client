@@ -1,0 +1,37 @@
+fragment TaskLog on TaskLog {
+  id
+  status
+  createdAt
+}
+query TaskLog($id: ID!) {
+  taskLog(id: $id) {
+    ...TaskLog
+    result
+    content
+  }
+}
+
+query TaskLogs(
+  $taskId: ID!
+  $after: String
+  $query: String
+  $orderBy: [Ordering]
+) {
+  task(id: $taskId) {
+    id
+    logs(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      edges {
+        node {
+          ...TaskLog
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+}

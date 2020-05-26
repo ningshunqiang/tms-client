@@ -54,6 +54,12 @@ export default [
                     path: "/tasks/:id/edit",
                     component: "./task/EditTask",
                   },
+
+                  {
+                    name: "任务日志",
+                    path: "/tasks/:id/logs",
+                    component: "./task/EditTask/TaskLog",
+                  },
                 ],
               },
               {
