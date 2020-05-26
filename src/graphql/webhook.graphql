@@ -5,6 +5,7 @@ fragment Webhook on Webhook {
   createdAt
   updatedAt
   token
+  sync
 }
 
 query Webhook($id: ID!) {

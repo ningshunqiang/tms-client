@@ -879,7 +879,7 @@ export type UpdatedTimerMutation = { __typename?: "Mutation" } & {
 
 export type WebhookFragment = { __typename?: "Webhook" } & Pick<
   Webhook,
-  "id" | "name" | "enable" | "createdAt" | "updatedAt" | "token"
+  "id" | "name" | "enable" | "createdAt" | "updatedAt" | "token" | "sync"
 >;
 
 export type WebhookQueryVariables = {
@@ -1009,6 +1009,7 @@ export const WebhookFragmentDoc = gql`
     createdAt
     updatedAt
     token
+    sync
   }
 `;
 export const GetTokenDocument = gql`

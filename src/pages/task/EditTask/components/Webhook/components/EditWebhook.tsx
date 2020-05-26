@@ -68,6 +68,14 @@ const EditWebhook: SFC<EditWebhookModalProps> = ({
             <Switch />
           </Form.Item>
           <Form.Item
+            initialValue={false}
+            label="同步"
+            name="sync"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
             label="名称"
             name="name"
             rules={[{ required: true, message: "Webhook名称" }]}
