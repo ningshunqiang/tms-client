@@ -22,7 +22,7 @@ import useCachesQueryVariablesState from "@/hooks/variablesStates/useCachesQuery
 
 import EditCache from "../components/EditCache";
 
-const Cache: SFC = (): ReactElement => {
+const CacheManager: SFC = (): ReactElement => {
   const [variables, setVariables] = useCachesQueryVariablesState();
   const [updateCache, { loading: updateLoading }] = useUpdateCacheMutation();
 
@@ -244,4 +244,4 @@ const Cache: SFC = (): ReactElement => {
   );
 };
 
-export default Cache;
+export default CacheManager;
