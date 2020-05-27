@@ -68,6 +68,11 @@ export default [
                 component: "./storage/StorageManager",
               },
               {
+                path: "/caches",
+                name: "缓存管理",
+                component: "./cache/CacheManager",
+              },
+              {
                 component: "./404",
               },
             ],
