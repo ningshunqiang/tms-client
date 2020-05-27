@@ -29,7 +29,7 @@ const Cache: SFC = (): ReactElement => {
   const [createCache, { loading: createLoading }] = useCreateCacheMutation();
 
   const [visible, setVisible] = useState(false);
-  const [current, setCurrent] = useState<CacheFragment>();
+  const [cache, setCache] = useState<CacheFragment>(null);
 
   const { data, loading, refetch, fetchMore } = useCachesQuery({
     notifyOnNetworkStatusChange: true,
@@ -39,9 +39,9 @@ const Cache: SFC = (): ReactElement => {
   const [deleteCache, { loading: deleteLoading }] = useDeleteCacheMutation();
 
   const deleteClick = useCallback(
-    async (cache): Promise<void> => {
+    async ({ id }): Promise<void> => {
       try {
-        await deleteCache({ variables: { id: cache.id } });
+        await deleteCache({ variables: { id } });
         message.success("删除成功！");
         refetch();
       } catch {
@@ -52,19 +52,19 @@ const Cache: SFC = (): ReactElement => {
   );
 
   const handleCancel = useCallback(() => {
-    setCurrent(null);
+    setCache(null);
     setVisible(false);
   }, []);
 
   const handleOk = useCallback(
     async (value: CacheFragment) => {
-      if (current?.id) {
+      if (cache?.id) {
         try {
           setVisible(false);
           await updateCache({
-            variables: { id: current.id, input: value },
+            variables: { id: cache.id, input: value },
           });
-          setCurrent(null);
+          setCache(null);
           message.success("更新成功");
         } catch {
           message.error("更新失败");
@@ -79,7 +79,7 @@ const Cache: SFC = (): ReactElement => {
               },
             },
           });
-          setCurrent(null);
+          setCache(null);
           refetch();
           message.success("创建成功");
         } catch {
@@ -87,7 +87,7 @@ const Cache: SFC = (): ReactElement => {
         }
       }
     },
-    [current, createCache, updateCache, refetch]
+    [cache, createCache, updateCache, refetch]
   );
 
   const columns = useMemo(
@@ -161,13 +161,14 @@ const Cache: SFC = (): ReactElement => {
         width: 80,
         ellipsis: true,
         sorter: true,
-        render: (cache: CacheFragment): ReactElement => (
+
+        render: (value: CacheFragment): ReactElement => (
           <span>
             <Button
               style={{ padding: 0, border: 0 }}
               type="link"
               onClick={(): void => {
-                setCurrent(cache);
+                setCache(value);
                 setVisible(true);
               }}
             >
@@ -177,8 +178,8 @@ const Cache: SFC = (): ReactElement => {
             <Popconfirm
               cancelText="取消"
               okText="确定"
-              title={`删除 ${cache.name} 任务？`}
-              onConfirm={(): Promise<void> => deleteClick(cache)}
+              title={`删除 ${value.name} 任务？`}
+              onConfirm={(): Promise<void> => deleteClick(value)}
             >
               <Button style={{ padding: 0, border: 0 }} type="link">
                 删除
@@ -234,7 +235,7 @@ const Cache: SFC = (): ReactElement => {
       />
 
       <EditCache
-        current={current}
+        current={cache}
         visible={visible}
         onCancel={handleCancel}
         onOk={handleOk}
