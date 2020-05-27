@@ -256,6 +256,7 @@ const Webhook: SFC<WebhookProps> = ({ id }): ReactElement => {
               return {
                 task: {
                   id: fetchMoreResult.task.id,
+                  __typename: fetchMoreResult.task.__typename,
                   webhooks: {
                     __typename: previousResult.task.webhooks.__typename,
                     totalCount: fetchMoreResult.task.webhooks.totalCount,

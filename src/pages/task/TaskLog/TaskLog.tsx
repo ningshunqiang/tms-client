@@ -121,6 +121,7 @@ const TaskLog = (): ReactElement => {
               return {
                 task: {
                   id: fetchMoreResult.task.id,
+                  __typename: fetchMoreResult.task.__typename,
                   logs: {
                     __typename: previousResult.task.logs.__typename,
                     totalCount: fetchMoreResult.task.logs.totalCount,
