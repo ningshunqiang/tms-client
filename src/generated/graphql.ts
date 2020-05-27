@@ -770,7 +770,7 @@ export type UpdateTaskMutationVariables = {
 };
 
 export type UpdateTaskMutation = { __typename?: "Mutation" } & {
-  updateTask: { __typename?: "Task" } & TaskFragment;
+  updateTask: { __typename?: "Task" } & Pick<Task, "code"> & TaskFragment;
 };
 
 export type TaskLogFragment = { __typename?: "TaskLog" } & Pick<
@@ -1851,6 +1851,7 @@ export const UpdateTaskDocument = gql`
   mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) {
     updateTask(id: $id, input: $input) {
       ...Task
+      code
     }
   }
   ${TaskFragmentDoc}
