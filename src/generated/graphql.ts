@@ -708,6 +708,73 @@ export type RefreshTokenMutation = { __typename?: "Mutation" } & {
   refreshToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token">;
 };
 
+export type CacheFragment = { __typename?: "Cache" } & Pick<
+  Cache,
+  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt"
+>;
+
+export type CacheQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type CacheQuery = { __typename?: "Query" } & {
+  cache: { __typename?: "Cache" } & CacheFragment;
+};
+
+export type CachesQueryVariables = {
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type CachesQuery = { __typename?: "Query" } & {
+  caches: { __typename?: "CacheConnection" } & Pick<
+    CacheConnection,
+    "totalCount"
+  > & {
+      pageInfo: { __typename?: "PageInfo" } & Pick<
+        PageInfo,
+        "hasNextPage" | "endCursor"
+      >;
+      edges: Array<
+        { __typename?: "CacheEdge" } & {
+          node: { __typename?: "Cache" } & {
+            owner: { __typename?: "User" } & Pick<User, "name">;
+          } & CacheFragment;
+        }
+      >;
+    };
+};
+
+export type DeleteCacheMutationVariables = {
+  id: Scalars["ID"];
+};
+
+export type DeleteCacheMutation = { __typename?: "Mutation" } & {
+  deleteCache: { __typename?: "Cache" } & CacheFragment;
+};
+
+export type CreateCacheMutationVariables = {
+  input: CreateCacheInput;
+};
+
+export type CreateCacheMutation = { __typename?: "Mutation" } & {
+  createCache: { __typename?: "Cache" } & {
+    owner: { __typename?: "User" } & Pick<User, "name">;
+  } & CacheFragment;
+};
+
+export type UpdateCacheMutationVariables = {
+  id: Scalars["ID"];
+  input: UpdateCacheInput;
+};
+
+export type UpdateCacheMutation = { __typename?: "Mutation" } & {
+  updateCache: { __typename?: "Cache" } & {
+    owner: { __typename?: "User" } & Pick<User, "name">;
+  } & CacheFragment;
+};
+
 export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
   TaskHistory,
   "id" | "name" | "createdAt" | "updatedAt"
@@ -878,7 +945,7 @@ export type UpdateTaskMutationVariables = {
 };
 
 export type UpdateTaskMutation = { __typename?: "Mutation" } & {
-  updateTask: { __typename?: "Task" } & TaskFragment;
+  updateTask: { __typename?: "Task" } & Pick<Task, "code"> & TaskFragment;
 };
 
 export type TaskLogFragment = { __typename?: "TaskLog" } & Pick<
@@ -1053,6 +1120,16 @@ export const UserFragmentDoc = gql`
     id
     name
     email
+  }
+`;
+export const CacheFragmentDoc = gql`
+  fragment Cache on Cache {
+    id
+    name
+    enable
+    key
+    updatedAt
+    createdAt
   }
 `;
 export const TaskHistoryFragmentDoc = gql`
@@ -1276,6 +1353,286 @@ export type RefreshTokenMutationResult = ApolloReactCommon.MutationResult<
 export type RefreshTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
   RefreshTokenMutation,
   RefreshTokenMutationVariables
+>;
+export const CacheDocument = gql`
+  query Cache($id: ID!) {
+    cache(id: $id) {
+      ...Cache
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+
+/**
+ * __useCacheQuery__
+ *
+ * To run a query within a React component, call `useCacheQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCacheQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCacheQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCacheQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CacheQuery,
+    CacheQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<CacheQuery, CacheQueryVariables>(
+    CacheDocument,
+    baseOptions
+  );
+}
+export function useCacheLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CacheQuery,
+    CacheQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<CacheQuery, CacheQueryVariables>(
+    CacheDocument,
+    baseOptions
+  );
+}
+export type CacheQueryHookResult = ReturnType<typeof useCacheQuery>;
+export type CacheLazyQueryHookResult = ReturnType<typeof useCacheLazyQuery>;
+export type CacheQueryResult = ApolloReactCommon.QueryResult<
+  CacheQuery,
+  CacheQueryVariables
+>;
+export const CachesDocument = gql`
+  query Caches($after: String, $query: String, $orderBy: [Ordering]) {
+    caches(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...Cache
+          owner {
+            name
+          }
+        }
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+
+/**
+ * __useCachesQuery__
+ *
+ * To run a query within a React component, call `useCachesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCachesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCachesQuery({
+ *   variables: {
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useCachesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CachesQuery,
+    CachesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<CachesQuery, CachesQueryVariables>(
+    CachesDocument,
+    baseOptions
+  );
+}
+export function useCachesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CachesQuery,
+    CachesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<CachesQuery, CachesQueryVariables>(
+    CachesDocument,
+    baseOptions
+  );
+}
+export type CachesQueryHookResult = ReturnType<typeof useCachesQuery>;
+export type CachesLazyQueryHookResult = ReturnType<typeof useCachesLazyQuery>;
+export type CachesQueryResult = ApolloReactCommon.QueryResult<
+  CachesQuery,
+  CachesQueryVariables
+>;
+export const DeleteCacheDocument = gql`
+  mutation DeleteCache($id: ID!) {
+    deleteCache(id: $id) {
+      ...Cache
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type DeleteCacheMutationFn = ApolloReactCommon.MutationFunction<
+  DeleteCacheMutation,
+  DeleteCacheMutationVariables
+>;
+
+/**
+ * __useDeleteCacheMutation__
+ *
+ * To run a mutation, you first call `useDeleteCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCacheMutation, { data, loading, error }] = useDeleteCacheMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeleteCacheMutation,
+    DeleteCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeleteCacheMutation,
+    DeleteCacheMutationVariables
+  >(DeleteCacheDocument, baseOptions);
+}
+export type DeleteCacheMutationHookResult = ReturnType<
+  typeof useDeleteCacheMutation
+>;
+export type DeleteCacheMutationResult = ApolloReactCommon.MutationResult<
+  DeleteCacheMutation
+>;
+export type DeleteCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteCacheMutation,
+  DeleteCacheMutationVariables
+>;
+export const CreateCacheDocument = gql`
+  mutation CreateCache($input: CreateCacheInput!) {
+    createCache(input: $input) {
+      ...Cache
+      owner {
+        name
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type CreateCacheMutationFn = ApolloReactCommon.MutationFunction<
+  CreateCacheMutation,
+  CreateCacheMutationVariables
+>;
+
+/**
+ * __useCreateCacheMutation__
+ *
+ * To run a mutation, you first call `useCreateCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCacheMutation, { data, loading, error }] = useCreateCacheMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateCacheMutation,
+    CreateCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateCacheMutation,
+    CreateCacheMutationVariables
+  >(CreateCacheDocument, baseOptions);
+}
+export type CreateCacheMutationHookResult = ReturnType<
+  typeof useCreateCacheMutation
+>;
+export type CreateCacheMutationResult = ApolloReactCommon.MutationResult<
+  CreateCacheMutation
+>;
+export type CreateCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateCacheMutation,
+  CreateCacheMutationVariables
+>;
+export const UpdateCacheDocument = gql`
+  mutation UpdateCache($id: ID!, $input: UpdateCacheInput!) {
+    updateCache(id: $id, input: $input) {
+      ...Cache
+      owner {
+        name
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type UpdateCacheMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateCacheMutation,
+  UpdateCacheMutationVariables
+>;
+
+/**
+ * __useUpdateCacheMutation__
+ *
+ * To run a mutation, you first call `useUpdateCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCacheMutation, { data, loading, error }] = useUpdateCacheMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    UpdateCacheMutation,
+    UpdateCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    UpdateCacheMutation,
+    UpdateCacheMutationVariables
+  >(UpdateCacheDocument, baseOptions);
+}
+export type UpdateCacheMutationHookResult = ReturnType<
+  typeof useUpdateCacheMutation
+>;
+export type UpdateCacheMutationResult = ApolloReactCommon.MutationResult<
+  UpdateCacheMutation
+>;
+export type UpdateCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateCacheMutation,
+  UpdateCacheMutationVariables
 >;
 export const TaskHistoryDocument = gql`
   query TaskHistory($id: ID!) {
@@ -1960,6 +2317,7 @@ export const UpdateTaskDocument = gql`
   mutation UpdateTask($id: ID!, $input: UpdateTaskInput!) {
     updateTask(id: $id, input: $input) {
       ...Task
+      code
     }
   }
   ${TaskFragmentDoc}

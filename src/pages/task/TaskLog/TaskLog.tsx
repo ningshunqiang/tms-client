@@ -68,14 +68,19 @@ const TaskLog: SFC<TaskLogProps> = ({
         width: 100,
         filterType: FilterType.SelectInput,
         render: (values, row: TaskLogFragment) => {
+          const header = (
+            <div style={{ display: "flex" }}>
+              <div>
+                {moment(row.createdAt)
+                  .utcOffset(480)
+                  .format("YYYY-MM-DDhh:mm:ss")}
+              </div>
+              <div style={{ marginLeft: "100px" }}>{row.status}</div>
+            </div>
+          );
           return (
             <Collapse bordered={false}>
-              <Panel
-                header={moment(row.createdAt)
-                  .utcOffset(480)
-                  .format("YYYY-MM-DD hh:mm:ss")}
-                key="1"
-              >
+              <Panel header={header} key="1">
                 <TaskLogMargin>
                   <h5>ID：</h5>
                   {row.id}
@@ -84,22 +89,20 @@ const TaskLog: SFC<TaskLogProps> = ({
                   <h5>状态：</h5>
                   {row.status}
                 </TaskLogMargin>
-
                 <TaskLogMargin>
                   <h5>控制台日志：</h5>
                   {row.content}
                 </TaskLogMargin>
                 <TaskLogMargin>
                   <h5>返回值：</h5>
-                  {JSON.stringify(row.result)}
+                  <pre> {JSON.stringify(row.result)}</pre>
                 </TaskLogMargin>
                 <TaskLogMargin>
                   <h5>创建时间：</h5>
-                  <pre>
-                    {moment(row.createdAt)
-                      .utcOffset(480)
-                      .format("YYYY-MM-DD hh:mm:ss")}
-                  </pre>
+
+                  {moment(row.createdAt)
+                    .utcOffset(480)
+                    .format("YYYY-MM-DD hh:mm:ss")}
                 </TaskLogMargin>
               </Panel>
             </Collapse>
