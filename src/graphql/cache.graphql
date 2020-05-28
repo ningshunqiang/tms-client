@@ -1,0 +1,56 @@
+fragment Cache on Cache {
+  id
+  name
+  enable
+  key
+  updatedAt
+  createdAt
+}
+
+query Cache($id: ID!) {
+  cache(id: $id) {
+    ...Cache
+  }
+}
+
+query Caches($after: String, $query: String, $orderBy: [Ordering]) {
+  caches(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+
+    edges {
+      node {
+        ...Cache
+        owner {
+          name
+        }
+      }
+    }
+  }
+}
+
+mutation DeleteCache($id: ID!) {
+  deleteCache(id: $id) {
+    ...Cache
+  }
+}
+mutation CreateCache($input: CreateCacheInput!) {
+  createCache(input: $input) {
+    ...Cache
+    owner {
+      name
+    }
+  }
+}
+
+mutation UpdateCache($id: ID!, $input: UpdateCacheInput!) {
+  updateCache(id: $id, input: $input) {
+    ...Cache
+    owner {
+      name
+    }
+  }
+}

@@ -44,6 +44,7 @@ export type User = {
   updatedAt: Scalars["DateTime"];
   tasks: TaskConnection;
   storages: StorageConnection;
+  caches: CacheConnection;
 };
 
 export type UserTasksArgs = {
@@ -56,6 +57,15 @@ export type UserTasksArgs = {
 };
 
 export type UserStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type UserCachesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -79,8 +89,8 @@ export enum Direction {
   DESC = "DESC",
 }
 
-export type Storage = {
-  __typename?: "Storage";
+export type Cache = {
+  __typename?: "Cache";
   id: Scalars["ID"];
   key: Scalars["String"];
   name: Scalars["String"];
@@ -93,7 +103,7 @@ export type Storage = {
   tasks: TaskConnection;
 };
 
-export type StorageCollaboratorsArgs = {
+export type CacheCollaboratorsArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -102,13 +112,23 @@ export type StorageCollaboratorsArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type StorageTasksArgs = {
+export type CacheTasksArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
   first?: Maybe<Scalars["Int"]>;
   last?: Maybe<Scalars["Int"]>;
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistory = {
+  __typename?: "TaskHistory";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  code: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  user: User;
 };
 
 export type TaskLog = {
@@ -165,6 +185,7 @@ export type Task = {
   timers: TimerConnection;
   webhooks: WebhookConnection;
   storages: StorageConnection;
+  caches: CacheConnection;
   logs: TaskLogConnection;
   dependencies: TaskConnection;
 };
@@ -214,6 +235,15 @@ export type TaskStoragesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskCachesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
 export type TaskLogsArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
@@ -232,14 +262,36 @@ export type TaskDependenciesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type TaskHistory = {
-  __typename?: "TaskHistory";
+export type Storage = {
+  __typename?: "Storage";
   id: Scalars["ID"];
+  key: Scalars["String"];
   name: Scalars["String"];
-  code: Scalars["String"];
+  enable: Scalars["Boolean"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
-  user: User;
+  ownerId: Scalars["String"];
+  owner: User;
+  collaborators: UserConnection;
+  tasks: TaskConnection;
+};
+
+export type StorageCollaboratorsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StorageTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
 export type PageInfo = {
@@ -248,6 +300,32 @@ export type PageInfo = {
   hasPreviousPage: Scalars["Boolean"];
   startCursor?: Maybe<Scalars["String"]>;
   endCursor?: Maybe<Scalars["String"]>;
+};
+
+export type TaskEdge = {
+  __typename?: "TaskEdge";
+  node: Task;
+  cursor: Scalars["String"];
+};
+
+export type TaskConnection = {
+  __typename?: "TaskConnection";
+  edges: Array<TaskEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type UserEdge = {
+  __typename?: "UserEdge";
+  node: User;
+  cursor: Scalars["String"];
+};
+
+export type UserConnection = {
+  __typename?: "UserConnection";
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
 };
 
 export type StorageEdge = {
@@ -259,6 +337,19 @@ export type StorageEdge = {
 export type StorageConnection = {
   __typename?: "StorageConnection";
   edges: Array<StorageEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type CacheEdge = {
+  __typename?: "CacheEdge";
+  node: Cache;
+  cursor: Scalars["String"];
+};
+
+export type CacheConnection = {
+  __typename?: "CacheConnection";
+  edges: Array<CacheEdge>;
   pageInfo: PageInfo;
   totalCount?: Maybe<Scalars["Int"]>;
 };
@@ -302,19 +393,6 @@ export type TimerConnection = {
   totalCount?: Maybe<Scalars["Int"]>;
 };
 
-export type UserEdge = {
-  __typename?: "UserEdge";
-  node: User;
-  cursor: Scalars["String"];
-};
-
-export type UserConnection = {
-  __typename?: "UserConnection";
-  edges: Array<UserEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
 export type WebhookEdge = {
   __typename?: "WebhookEdge";
   node: Webhook;
@@ -328,19 +406,6 @@ export type WebhookConnection = {
   totalCount?: Maybe<Scalars["Int"]>;
 };
 
-export type TaskEdge = {
-  __typename?: "TaskEdge";
-  node: Task;
-  cursor: Scalars["String"];
-};
-
-export type TaskConnection = {
-  __typename?: "TaskConnection";
-  edges: Array<TaskEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
 export type TokenPayload = {
   __typename?: "TokenPayload";
   token: Scalars["String"];
@@ -349,16 +414,31 @@ export type TokenPayload = {
 
 export type Query = {
   __typename?: "Query";
+  storage: Storage;
+  storages: StorageConnection;
   taskHistory: TaskHistory;
   taskLog: TaskLog;
   timer: Timer;
   webhook: Webhook;
   task: Task;
   tasks: TaskConnection;
-  storage: Storage;
-  storages: StorageConnection;
+  cache: Cache;
+  caches: CacheConnection;
   user: User;
   users: UserConnection;
+};
+
+export type QueryStorageArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
 export type QueryTaskHistoryArgs = {
@@ -390,11 +470,11 @@ export type QueryTasksArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type QueryStorageArgs = {
+export type QueryCacheArgs = {
   id: Scalars["ID"];
 };
 
-export type QueryStoragesArgs = {
+export type QueryCachesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -418,6 +498,9 @@ export type QueryUsersArgs = {
 
 export type Mutation = {
   __typename?: "Mutation";
+  createStorage: Storage;
+  updateStorage: Storage;
+  deleteStorage: Storage;
   createTimer: Timer;
   updateTimer: Timer;
   deleteTimer: Timer;
@@ -427,14 +510,27 @@ export type Mutation = {
   createTask: Task;
   updateTask: Task;
   deleteTask: Task;
-  createStorage: Storage;
-  updateStorage: Storage;
-  deleteStorage: Storage;
+  createCache: Cache;
+  updateCache: Cache;
+  deleteCache: Cache;
   createUser: User;
   updateUser: User;
   deleteUser: User;
   getToken: TokenPayload;
   refreshToken: TokenPayload;
+};
+
+export type MutationCreateStorageArgs = {
+  input: CreateStorageInput;
+};
+
+export type MutationUpdateStorageArgs = {
+  id: Scalars["ID"];
+  input: UpdateStorageInput;
+};
+
+export type MutationDeleteStorageArgs = {
+  id: Scalars["ID"];
 };
 
 export type MutationCreateTimerArgs = {
@@ -476,16 +572,16 @@ export type MutationDeleteTaskArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationCreateStorageArgs = {
-  input: CreateStorageInput;
+export type MutationCreateCacheArgs = {
+  input: CreateCacheInput;
 };
 
-export type MutationUpdateStorageArgs = {
+export type MutationUpdateCacheArgs = {
   id: Scalars["ID"];
-  input: UpdateStorageInput;
+  input: UpdateCacheInput;
 };
 
-export type MutationDeleteStorageArgs = {
+export type MutationDeleteCacheArgs = {
   id: Scalars["ID"];
 };
 
@@ -505,6 +601,18 @@ export type MutationDeleteUserArgs = {
 export type MutationGetTokenArgs = {
   password: Scalars["String"];
   email: Scalars["String"];
+};
+
+export type CreateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+};
+
+export type UpdateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  enable?: Maybe<Scalars["Boolean"]>;
 };
 
 export type CreateTimerInput = {
@@ -548,13 +656,13 @@ export type UpdateTaskInput = {
   enable?: Maybe<Scalars["Boolean"]>;
 };
 
-export type CreateStorageInput = {
+export type CreateCacheInput = {
   key?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
   enable: Scalars["Boolean"];
 };
 
-export type UpdateStorageInput = {
+export type UpdateCacheInput = {
   key?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
@@ -598,6 +706,73 @@ export type RefreshTokenMutationVariables = {};
 
 export type RefreshTokenMutation = { __typename?: "Mutation" } & {
   refreshToken: { __typename?: "TokenPayload" } & Pick<TokenPayload, "token">;
+};
+
+export type CacheFragment = { __typename?: "Cache" } & Pick<
+  Cache,
+  "id" | "name" | "enable" | "key" | "updatedAt" | "createdAt"
+>;
+
+export type CacheQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type CacheQuery = { __typename?: "Query" } & {
+  cache: { __typename?: "Cache" } & CacheFragment;
+};
+
+export type CachesQueryVariables = {
+  after?: Maybe<Scalars["String"]>;
+  query?: Maybe<Scalars["String"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type CachesQuery = { __typename?: "Query" } & {
+  caches: { __typename?: "CacheConnection" } & Pick<
+    CacheConnection,
+    "totalCount"
+  > & {
+      pageInfo: { __typename?: "PageInfo" } & Pick<
+        PageInfo,
+        "hasNextPage" | "endCursor"
+      >;
+      edges: Array<
+        { __typename?: "CacheEdge" } & {
+          node: { __typename?: "Cache" } & {
+            owner: { __typename?: "User" } & Pick<User, "name">;
+          } & CacheFragment;
+        }
+      >;
+    };
+};
+
+export type DeleteCacheMutationVariables = {
+  id: Scalars["ID"];
+};
+
+export type DeleteCacheMutation = { __typename?: "Mutation" } & {
+  deleteCache: { __typename?: "Cache" } & CacheFragment;
+};
+
+export type CreateCacheMutationVariables = {
+  input: CreateCacheInput;
+};
+
+export type CreateCacheMutation = { __typename?: "Mutation" } & {
+  createCache: { __typename?: "Cache" } & {
+    owner: { __typename?: "User" } & Pick<User, "name">;
+  } & CacheFragment;
+};
+
+export type UpdateCacheMutationVariables = {
+  id: Scalars["ID"];
+  input: UpdateCacheInput;
+};
+
+export type UpdateCacheMutation = { __typename?: "Mutation" } & {
+  updateCache: { __typename?: "Cache" } & {
+    owner: { __typename?: "User" } & Pick<User, "name">;
+  } & CacheFragment;
 };
 
 export type TaskHistoryFragment = { __typename?: "TaskHistory" } & Pick<
@@ -948,6 +1123,16 @@ export const UserFragmentDoc = gql`
     email
   }
 `;
+export const CacheFragmentDoc = gql`
+  fragment Cache on Cache {
+    id
+    name
+    enable
+    key
+    updatedAt
+    createdAt
+  }
+`;
 export const TaskHistoryFragmentDoc = gql`
   fragment TaskHistory on TaskHistory {
     id
@@ -1167,6 +1352,286 @@ export type RefreshTokenMutationResult = ApolloReactCommon.MutationResult<
 export type RefreshTokenMutationOptions = ApolloReactCommon.BaseMutationOptions<
   RefreshTokenMutation,
   RefreshTokenMutationVariables
+>;
+export const CacheDocument = gql`
+  query Cache($id: ID!) {
+    cache(id: $id) {
+      ...Cache
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+
+/**
+ * __useCacheQuery__
+ *
+ * To run a query within a React component, call `useCacheQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCacheQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCacheQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useCacheQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CacheQuery,
+    CacheQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<CacheQuery, CacheQueryVariables>(
+    CacheDocument,
+    baseOptions
+  );
+}
+export function useCacheLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CacheQuery,
+    CacheQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<CacheQuery, CacheQueryVariables>(
+    CacheDocument,
+    baseOptions
+  );
+}
+export type CacheQueryHookResult = ReturnType<typeof useCacheQuery>;
+export type CacheLazyQueryHookResult = ReturnType<typeof useCacheLazyQuery>;
+export type CacheQueryResult = ApolloReactCommon.QueryResult<
+  CacheQuery,
+  CacheQueryVariables
+>;
+export const CachesDocument = gql`
+  query Caches($after: String, $query: String, $orderBy: [Ordering]) {
+    caches(first: 10, after: $after, query: $query, orderBy: $orderBy) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          ...Cache
+          owner {
+            name
+          }
+        }
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+
+/**
+ * __useCachesQuery__
+ *
+ * To run a query within a React component, call `useCachesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCachesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCachesQuery({
+ *   variables: {
+ *      after: // value for 'after'
+ *      query: // value for 'query'
+ *      orderBy: // value for 'orderBy'
+ *   },
+ * });
+ */
+export function useCachesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CachesQuery,
+    CachesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<CachesQuery, CachesQueryVariables>(
+    CachesDocument,
+    baseOptions
+  );
+}
+export function useCachesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CachesQuery,
+    CachesQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<CachesQuery, CachesQueryVariables>(
+    CachesDocument,
+    baseOptions
+  );
+}
+export type CachesQueryHookResult = ReturnType<typeof useCachesQuery>;
+export type CachesLazyQueryHookResult = ReturnType<typeof useCachesLazyQuery>;
+export type CachesQueryResult = ApolloReactCommon.QueryResult<
+  CachesQuery,
+  CachesQueryVariables
+>;
+export const DeleteCacheDocument = gql`
+  mutation DeleteCache($id: ID!) {
+    deleteCache(id: $id) {
+      ...Cache
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type DeleteCacheMutationFn = ApolloReactCommon.MutationFunction<
+  DeleteCacheMutation,
+  DeleteCacheMutationVariables
+>;
+
+/**
+ * __useDeleteCacheMutation__
+ *
+ * To run a mutation, you first call `useDeleteCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCacheMutation, { data, loading, error }] = useDeleteCacheMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeleteCacheMutation,
+    DeleteCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeleteCacheMutation,
+    DeleteCacheMutationVariables
+  >(DeleteCacheDocument, baseOptions);
+}
+export type DeleteCacheMutationHookResult = ReturnType<
+  typeof useDeleteCacheMutation
+>;
+export type DeleteCacheMutationResult = ApolloReactCommon.MutationResult<
+  DeleteCacheMutation
+>;
+export type DeleteCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteCacheMutation,
+  DeleteCacheMutationVariables
+>;
+export const CreateCacheDocument = gql`
+  mutation CreateCache($input: CreateCacheInput!) {
+    createCache(input: $input) {
+      ...Cache
+      owner {
+        name
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type CreateCacheMutationFn = ApolloReactCommon.MutationFunction<
+  CreateCacheMutation,
+  CreateCacheMutationVariables
+>;
+
+/**
+ * __useCreateCacheMutation__
+ *
+ * To run a mutation, you first call `useCreateCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createCacheMutation, { data, loading, error }] = useCreateCacheMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateCacheMutation,
+    CreateCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateCacheMutation,
+    CreateCacheMutationVariables
+  >(CreateCacheDocument, baseOptions);
+}
+export type CreateCacheMutationHookResult = ReturnType<
+  typeof useCreateCacheMutation
+>;
+export type CreateCacheMutationResult = ApolloReactCommon.MutationResult<
+  CreateCacheMutation
+>;
+export type CreateCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateCacheMutation,
+  CreateCacheMutationVariables
+>;
+export const UpdateCacheDocument = gql`
+  mutation UpdateCache($id: ID!, $input: UpdateCacheInput!) {
+    updateCache(id: $id, input: $input) {
+      ...Cache
+      owner {
+        name
+      }
+    }
+  }
+  ${CacheFragmentDoc}
+`;
+export type UpdateCacheMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateCacheMutation,
+  UpdateCacheMutationVariables
+>;
+
+/**
+ * __useUpdateCacheMutation__
+ *
+ * To run a mutation, you first call `useUpdateCacheMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCacheMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCacheMutation, { data, loading, error }] = useUpdateCacheMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCacheMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    UpdateCacheMutation,
+    UpdateCacheMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    UpdateCacheMutation,
+    UpdateCacheMutationVariables
+  >(UpdateCacheDocument, baseOptions);
+}
+export type UpdateCacheMutationHookResult = ReturnType<
+  typeof useUpdateCacheMutation
+>;
+export type UpdateCacheMutationResult = ApolloReactCommon.MutationResult<
+  UpdateCacheMutation
+>;
+export type UpdateCacheMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateCacheMutation,
+  UpdateCacheMutationVariables
 >;
 export const TaskHistoryDocument = gql`
   query TaskHistory($id: ID!) {
