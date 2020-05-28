@@ -243,6 +243,7 @@ const Timer: SFC<TimerProps> = ({ id }): ReactElement => {
                 return {
                   task: {
                     id: fetchMoreResult.task.id,
+                    __typename: fetchMoreResult.task.__typename,
                     timers: {
                       __typename: previousResult.task.timers.__typename,
                       totalCount: fetchMoreResult.task.timers.totalCount,
