@@ -1,8 +1,9 @@
-import { Button, Card } from "antd";
+import { Card, Collapse, Drawer } from "antd";
 import { GraphQLTable } from "antd-graphql-table";
-import { FilterType, SimpleColumnType, ValueType } from "antd-simple-table";
-import React, { ReactElement, useCallback, useMemo, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { FilterType, SimpleColumnType } from "antd-simple-table";
+import moment from "moment";
+import React, { ReactElement, SFC, useMemo } from "react";
+import styled from "styled-components";
 
 import {
   TaskLogFragment,
@@ -11,139 +12,157 @@ import {
 } from "@/generated/graphql";
 import useTaskLogsQueryVariablesState from "@/hooks/variablesStates/useTaskLogsQueryVariablesState";
 
-import TaskLogDetails from "./components/TaskLogDetails";
+const TaskLogMargin = styled.div`
+  margin-top: 25px;
+`;
 
-const useGetTaskId = () => {
-  const history = useHistory();
-  return history.location.pathname.split("/")[2];
-};
+const { Panel } = Collapse;
 
-const TaskLog = (): ReactElement => {
+interface TaskLogProps {
+  taskId: string;
+  visible: boolean;
+  onClose: () => void;
+}
+
+const TaskLog: SFC<TaskLogProps> = ({
+  visible,
+  onClose,
+  taskId,
+}): ReactElement => {
   const [variables, setVariables] = useTaskLogsQueryVariablesState();
 
-  const [visible, setVisible] = useState(false);
-  const [taskLogId, setTaskLogId] = useState("");
-  const taskId = useGetTaskId();
   const { data, loading, refetch, fetchMore } = useTaskLogsQuery({
     notifyOnNetworkStatusChange: true,
     variables: {
       taskId,
+      ...variables,
     },
   });
-
-  const handleCancel = useCallback(() => {
-    setVisible(false);
-  }, []);
 
   const columns = useMemo(
     (): SimpleColumnType<TaskLogFragment>[] => [
       {
+        width: 80,
+        filterType: FilterType.Input,
         key: "id",
         title: "ID",
         dataIndex: "id",
-        width: 80,
-        copyable: true,
+        hidden: true,
         ellipsis: true,
-        sorter: true,
-        filterType: FilterType.Input,
       },
       {
+        width: 80,
+        filterType: FilterType.Input,
         key: "status",
         title: "状态",
         dataIndex: "status",
-        width: 80,
+        hidden: true,
         ellipsis: true,
-        sorter: true,
-        filterType: FilterType.Input,
-        render: (values, row: TaskLogFragment) => {
-          return <div>{row.status === "SUCCESS" ? "成功" : "失败"}</div>;
-        },
       },
+
       {
+        sorter: true,
         key: "createdAt",
         title: "创建时间",
         dataIndex: "createdAt",
         width: 100,
-        ellipsis: true,
-        sorter: true,
         filterType: FilterType.SelectInput,
-        valueType: ValueType.DATE_TIME,
-      },
-      {
-        key: "action",
-        title: "操作",
-        fixed: "right",
-        width: 50,
-        ellipsis: true,
-        sorter: true,
-        render: (taskLog: TaskLogFragment): ReactElement => (
-          <span>
-            <Button
-              style={{ padding: 0, border: 0 }}
-              type="link"
-              onClick={(): void => {
-                setTaskLogId(taskLog.id);
-                setVisible(true);
-              }}
-            >
-              查看详情
-            </Button>
-          </span>
-        ),
+        render: (values, row: TaskLogFragment) => {
+          return (
+            <Collapse bordered={false}>
+              <Panel
+                header={moment(row.createdAt)
+                  .utcOffset(480)
+                  .format("YYYY-MM-DD hh:mm:ss")}
+                key="1"
+              >
+                <TaskLogMargin>
+                  <h5>ID：</h5>
+                  {row.id}
+                </TaskLogMargin>
+                <TaskLogMargin>
+                  <h5>状态：</h5>
+                  {row.status}
+                </TaskLogMargin>
+
+                <TaskLogMargin>
+                  <h5>控制台日志：</h5>
+                  {row.content}
+                </TaskLogMargin>
+                <TaskLogMargin>
+                  <h5>返回值：</h5>
+                  {JSON.stringify(row.result)}
+                </TaskLogMargin>
+                <TaskLogMargin>
+                  <h5>创建时间：</h5>
+                  <pre>
+                    {moment(row.createdAt)
+                      .utcOffset(480)
+                      .format("YYYY-MM-DD hh:mm:ss")}
+                  </pre>
+                </TaskLogMargin>
+              </Panel>
+            </Collapse>
+          );
+        },
       },
     ],
     []
   );
 
   return (
-    <Card>
-      <GraphQLTable<TaskLogFragment>
-        columns={columns}
-        dataSource={data?.task.logs.edges.map(
-          ({ node }): TaskLogFragment => node
-        )}
-        hasMore={data?.task.logs.pageInfo.hasNextPage}
-        id="taskLog"
-        loading={loading}
-        name="taskLog"
-        rowKey="id"
-        variables={variables}
-        onLoadMore={(): void => {
-          fetchMore({
-            variables: {
-              after: data?.task.logs.pageInfo.endCursor,
-            },
-            updateQuery: (
-              previousResult,
-              { fetchMoreResult }
-            ): TaskLogsQuery => {
-              if (!fetchMoreResult) return previousResult;
-              return {
-                task: {
-                  id: fetchMoreResult.task.id,
-                  logs: {
-                    __typename: previousResult.task.logs.__typename,
-                    totalCount: fetchMoreResult.task.logs.totalCount,
-                    pageInfo: fetchMoreResult.task.logs.pageInfo,
-                    edges: [
-                      ...previousResult.task.logs.edges,
-                      ...fetchMoreResult.task.logs.edges,
-                    ],
+    <Drawer
+      closable
+      title="任务日志"
+      visible={visible}
+      width="50%"
+      onClose={() => onClose()}
+    >
+      <Card>
+        <GraphQLTable<TaskLogFragment>
+          columns={columns}
+          dataSource={data?.task.logs.edges.map(
+            ({ node }): TaskLogFragment => node
+          )}
+          hasMore={data?.task.logs.pageInfo.hasNextPage}
+          id="taskLog"
+          loading={loading}
+          name="taskLog"
+          rowKey="id"
+          variables={variables}
+          onLoadMore={(): void => {
+            fetchMore({
+              variables: {
+                after: data?.task.logs.pageInfo.endCursor,
+              },
+              updateQuery: (
+                previousResult,
+                { fetchMoreResult }
+              ): TaskLogsQuery => {
+                if (!fetchMoreResult) return previousResult;
+                return {
+                  task: {
+                    id: fetchMoreResult.task.id,
+                    __typename: fetchMoreResult.task.__typename,
+                    logs: {
+                      __typename: previousResult.task.logs.__typename,
+                      totalCount: fetchMoreResult.task.logs.totalCount,
+                      pageInfo: fetchMoreResult.task.logs.pageInfo,
+                      edges: [
+                        ...previousResult.task.logs.edges,
+                        ...fetchMoreResult.task.logs.edges,
+                      ],
+                    },
                   },
-                },
-              };
-            },
-          });
-        }}
-        onRefresh={() => refetch()}
-        onVariablesChange={setVariables}
-      />
-      <TaskLogDetails
-        taskLogId={taskLogId}
-        visible={visible}
-        onCancel={handleCancel}
-      />
-    </Card>
+                };
+              },
+            });
+          }}
+          onRefresh={() => refetch()}
+          onVariablesChange={setVariables}
+        />
+      </Card>
+    </Drawer>
   );
 };
 

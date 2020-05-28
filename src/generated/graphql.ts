@@ -44,6 +44,7 @@ export type User = {
   updatedAt: Scalars["DateTime"];
   tasks: TaskConnection;
   storages: StorageConnection;
+  caches: CacheConnection;
 };
 
 export type UserTasksArgs = {
@@ -56,6 +57,15 @@ export type UserTasksArgs = {
 };
 
 export type UserStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type UserCachesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -79,8 +89,8 @@ export enum Direction {
   DESC = "DESC",
 }
 
-export type Storage = {
-  __typename?: "Storage";
+export type Cache = {
+  __typename?: "Cache";
   id: Scalars["ID"];
   key: Scalars["String"];
   name: Scalars["String"];
@@ -93,7 +103,7 @@ export type Storage = {
   tasks: TaskConnection;
 };
 
-export type StorageCollaboratorsArgs = {
+export type CacheCollaboratorsArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -102,13 +112,23 @@ export type StorageCollaboratorsArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type StorageTasksArgs = {
+export type CacheTasksArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
   first?: Maybe<Scalars["Int"]>;
   last?: Maybe<Scalars["Int"]>;
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type TaskHistory = {
+  __typename?: "TaskHistory";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  code: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+  user: User;
 };
 
 export type TaskLog = {
@@ -165,6 +185,7 @@ export type Task = {
   timers: TimerConnection;
   webhooks: WebhookConnection;
   storages: StorageConnection;
+  caches: CacheConnection;
   logs: TaskLogConnection;
   dependencies: TaskConnection;
 };
@@ -214,6 +235,15 @@ export type TaskStoragesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
+export type TaskCachesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
 export type TaskLogsArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
@@ -232,14 +262,36 @@ export type TaskDependenciesArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type TaskHistory = {
-  __typename?: "TaskHistory";
+export type Storage = {
+  __typename?: "Storage";
   id: Scalars["ID"];
+  key: Scalars["String"];
   name: Scalars["String"];
-  code: Scalars["String"];
+  enable: Scalars["Boolean"];
   createdAt: Scalars["DateTime"];
   updatedAt: Scalars["DateTime"];
-  user: User;
+  ownerId: Scalars["String"];
+  owner: User;
+  collaborators: UserConnection;
+  tasks: TaskConnection;
+};
+
+export type StorageCollaboratorsArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
+};
+
+export type StorageTasksArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
 export type PageInfo = {
@@ -248,6 +300,32 @@ export type PageInfo = {
   hasPreviousPage: Scalars["Boolean"];
   startCursor?: Maybe<Scalars["String"]>;
   endCursor?: Maybe<Scalars["String"]>;
+};
+
+export type TaskEdge = {
+  __typename?: "TaskEdge";
+  node: Task;
+  cursor: Scalars["String"];
+};
+
+export type TaskConnection = {
+  __typename?: "TaskConnection";
+  edges: Array<TaskEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type UserEdge = {
+  __typename?: "UserEdge";
+  node: User;
+  cursor: Scalars["String"];
+};
+
+export type UserConnection = {
+  __typename?: "UserConnection";
+  edges: Array<UserEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
 };
 
 export type StorageEdge = {
@@ -259,6 +337,19 @@ export type StorageEdge = {
 export type StorageConnection = {
   __typename?: "StorageConnection";
   edges: Array<StorageEdge>;
+  pageInfo: PageInfo;
+  totalCount?: Maybe<Scalars["Int"]>;
+};
+
+export type CacheEdge = {
+  __typename?: "CacheEdge";
+  node: Cache;
+  cursor: Scalars["String"];
+};
+
+export type CacheConnection = {
+  __typename?: "CacheConnection";
+  edges: Array<CacheEdge>;
   pageInfo: PageInfo;
   totalCount?: Maybe<Scalars["Int"]>;
 };
@@ -302,19 +393,6 @@ export type TimerConnection = {
   totalCount?: Maybe<Scalars["Int"]>;
 };
 
-export type UserEdge = {
-  __typename?: "UserEdge";
-  node: User;
-  cursor: Scalars["String"];
-};
-
-export type UserConnection = {
-  __typename?: "UserConnection";
-  edges: Array<UserEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
 export type WebhookEdge = {
   __typename?: "WebhookEdge";
   node: Webhook;
@@ -328,19 +406,6 @@ export type WebhookConnection = {
   totalCount?: Maybe<Scalars["Int"]>;
 };
 
-export type TaskEdge = {
-  __typename?: "TaskEdge";
-  node: Task;
-  cursor: Scalars["String"];
-};
-
-export type TaskConnection = {
-  __typename?: "TaskConnection";
-  edges: Array<TaskEdge>;
-  pageInfo: PageInfo;
-  totalCount?: Maybe<Scalars["Int"]>;
-};
-
 export type TokenPayload = {
   __typename?: "TokenPayload";
   token: Scalars["String"];
@@ -349,16 +414,31 @@ export type TokenPayload = {
 
 export type Query = {
   __typename?: "Query";
+  storage: Storage;
+  storages: StorageConnection;
   taskHistory: TaskHistory;
   taskLog: TaskLog;
   timer: Timer;
   webhook: Webhook;
   task: Task;
   tasks: TaskConnection;
-  storage: Storage;
-  storages: StorageConnection;
+  cache: Cache;
+  caches: CacheConnection;
   user: User;
   users: UserConnection;
+};
+
+export type QueryStorageArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryStoragesArgs = {
+  query?: Maybe<Scalars["String"]>;
+  before?: Maybe<Scalars["String"]>;
+  after?: Maybe<Scalars["String"]>;
+  first?: Maybe<Scalars["Int"]>;
+  last?: Maybe<Scalars["Int"]>;
+  orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
 export type QueryTaskHistoryArgs = {
@@ -390,11 +470,11 @@ export type QueryTasksArgs = {
   orderBy?: Maybe<Array<Maybe<Ordering>>>;
 };
 
-export type QueryStorageArgs = {
+export type QueryCacheArgs = {
   id: Scalars["ID"];
 };
 
-export type QueryStoragesArgs = {
+export type QueryCachesArgs = {
   query?: Maybe<Scalars["String"]>;
   before?: Maybe<Scalars["String"]>;
   after?: Maybe<Scalars["String"]>;
@@ -418,6 +498,9 @@ export type QueryUsersArgs = {
 
 export type Mutation = {
   __typename?: "Mutation";
+  createStorage: Storage;
+  updateStorage: Storage;
+  deleteStorage: Storage;
   createTimer: Timer;
   updateTimer: Timer;
   deleteTimer: Timer;
@@ -427,14 +510,27 @@ export type Mutation = {
   createTask: Task;
   updateTask: Task;
   deleteTask: Task;
-  createStorage: Storage;
-  updateStorage: Storage;
-  deleteStorage: Storage;
+  createCache: Cache;
+  updateCache: Cache;
+  deleteCache: Cache;
   createUser: User;
   updateUser: User;
   deleteUser: User;
   getToken: TokenPayload;
   refreshToken: TokenPayload;
+};
+
+export type MutationCreateStorageArgs = {
+  input: CreateStorageInput;
+};
+
+export type MutationUpdateStorageArgs = {
+  id: Scalars["ID"];
+  input: UpdateStorageInput;
+};
+
+export type MutationDeleteStorageArgs = {
+  id: Scalars["ID"];
 };
 
 export type MutationCreateTimerArgs = {
@@ -476,16 +572,16 @@ export type MutationDeleteTaskArgs = {
   id: Scalars["ID"];
 };
 
-export type MutationCreateStorageArgs = {
-  input: CreateStorageInput;
+export type MutationCreateCacheArgs = {
+  input: CreateCacheInput;
 };
 
-export type MutationUpdateStorageArgs = {
+export type MutationUpdateCacheArgs = {
   id: Scalars["ID"];
-  input: UpdateStorageInput;
+  input: UpdateCacheInput;
 };
 
-export type MutationDeleteStorageArgs = {
+export type MutationDeleteCacheArgs = {
   id: Scalars["ID"];
 };
 
@@ -505,6 +601,18 @@ export type MutationDeleteUserArgs = {
 export type MutationGetTokenArgs = {
   password: Scalars["String"];
   email: Scalars["String"];
+};
+
+export type CreateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  enable: Scalars["Boolean"];
+};
+
+export type UpdateStorageInput = {
+  key?: Maybe<Scalars["String"]>;
+  name?: Maybe<Scalars["String"]>;
+  enable?: Maybe<Scalars["Boolean"]>;
 };
 
 export type CreateTimerInput = {
@@ -548,13 +656,13 @@ export type UpdateTaskInput = {
   enable?: Maybe<Scalars["Boolean"]>;
 };
 
-export type CreateStorageInput = {
+export type CreateCacheInput = {
   key?: Maybe<Scalars["String"]>;
   name: Scalars["String"];
   enable: Scalars["Boolean"];
 };
 
-export type UpdateStorageInput = {
+export type UpdateCacheInput = {
   key?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   enable?: Maybe<Scalars["Boolean"]>;
@@ -775,7 +883,7 @@ export type UpdateTaskMutation = { __typename?: "Mutation" } & {
 
 export type TaskLogFragment = { __typename?: "TaskLog" } & Pick<
   TaskLog,
-  "id" | "status" | "createdAt"
+  "id" | "status" | "createdAt" | "result" | "content"
 >;
 
 export type TaskLogQueryVariables = {
@@ -783,8 +891,7 @@ export type TaskLogQueryVariables = {
 };
 
 export type TaskLogQuery = { __typename?: "Query" } & {
-  taskLog: { __typename?: "TaskLog" } & Pick<TaskLog, "result" | "content"> &
-    TaskLogFragment;
+  taskLog: { __typename?: "TaskLog" } & TaskLogFragment;
 };
 
 export type TaskLogsQueryVariables = {
@@ -988,6 +1095,8 @@ export const TaskLogFragmentDoc = gql`
     id
     status
     createdAt
+    result
+    content
   }
 `;
 export const TimerFragmentDoc = gql`
@@ -1903,8 +2012,6 @@ export const TaskLogDocument = gql`
   query TaskLog($id: ID!) {
     taskLog(id: $id) {
       ...TaskLog
-      result
-      content
     }
   }
   ${TaskLogFragmentDoc}

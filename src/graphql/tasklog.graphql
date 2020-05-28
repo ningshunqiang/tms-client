@@ -2,12 +2,12 @@ fragment TaskLog on TaskLog {
   id
   status
   createdAt
+  result
+  content
 }
 query TaskLog($id: ID!) {
   taskLog(id: $id) {
     ...TaskLog
-    result
-    content
   }
 }
 

@@ -18,7 +18,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { Link } from "react-router-dom";
 
 import {
   CreateTaskInput,
@@ -27,6 +26,7 @@ import {
   useTaskQuery,
   useUpdateTaskMutation,
 } from "@/generated/graphql";
+import TaskLog from "@/pages/task/TaskLog";
 
 import TaskHistory from "../TaskHistory";
 
@@ -46,7 +46,7 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
   const [code, setCode] = useState(null);
   const [historyVisible, setHistoryVisible] = useState(false);
   const [historyId, setHistoryId] = useState("");
-
+  const [taskLogVisible, setTaskLogVisible] = useState(false);
   const { data: historyData, loading: taskLoading } = useTaskHistoryQuery({
     variables: {
       id: historyId,
@@ -111,11 +111,15 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
           >
             历史记录
           </Button>
-          <Link to={`/tasks/${id}/logs`}>
-            <Button size="small" style={{ marginLeft: 10 }} type="primary">
-              任务日志
-            </Button>
-          </Link>
+
+          <Button
+            size="small"
+            style={{ marginLeft: 10 }}
+            type="primary"
+            onClick={() => setTaskLogVisible(true)}
+          >
+            任务日志
+          </Button>
         </div>
         <Form hideRequiredMark layout="vertical">
           <Row gutter={16}>
@@ -182,6 +186,11 @@ const CreateTask: SFC<CreateTaskProps> = ({ id }): ReactElement => {
           visible={historyVisible}
           onClose={() => setHistoryVisible(false)}
           onHistoryId={handleHistoryId}
+        />
+        <TaskLog
+          taskId={id}
+          visible={taskLogVisible}
+          onClose={() => setTaskLogVisible(false)}
         />
       </Card>
     </Spin>
